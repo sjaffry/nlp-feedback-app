@@ -1,6 +1,9 @@
 const AWS = require('aws-sdk')
-AWS.config.update({ region: process.env.AWS_REGION })
-const s3 = new AWS.S3()
+AWS.config.update({ region: 'us-east-1' })
+const s3 = new AWS.S3({
+  apiVersion: '2006-03-01',
+  signatureVersion: 'v4',
+});
 const URL_EXPIRATION_SECONDS = 300
 
 // Main Lambda entry point
@@ -10,18 +13,26 @@ exports.handler = async (event) => {
 
 const getUploadURL = async function(event) {
   const randomID = parseInt(Math.random() * 10000000)
-  const Key = `${randomID}.jpg`
+  const Key = `audio/${randomID}.mp3`
 
   // Get signed URL from S3
   const s3Params = {
     Bucket: process.env.UploadBucket,
     Key,
     Expires: URL_EXPIRATION_SECONDS,
-    ContentType: 'image/jpeg'
+    ContentType: 'application/octet-stream'
   }
   const uploadURL = await s3.getSignedUrlPromise('putObject', s3Params)
-  return JSON.stringify({
-    uploadURL: uploadURL,
-    Key
-  })
+
+  const response = {
+      "statusCode": 200,
+      "headers": {},
+      "body": JSON.stringify({
+        uploadURL,
+        Key
+      }),
+      "isBase64Encoded": false
+  };
+
+  return response;
 }
