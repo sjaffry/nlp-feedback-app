@@ -1,9 +1,10 @@
 import React from 'react';
 import './App.css';
+import axios from "axios";
 import MicRecorder from 'mic-recorder-to-mp3';
-import fileUploader from './aws-s3'
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
+let file;
 
 class App extends React.Component {
   constructor(props){
@@ -35,17 +36,33 @@ class App extends React.Component {
       .then(([buffer, blob]) => {
         const blobURL = URL.createObjectURL(blob);
         let d = new Date();
-        const file = new File([blob],d.valueOf().toString(),{ type:"audio/wav" });
+        file = new File([blob],d.valueOf().toString(),{ type:"application/octet-stream" });
         this.setState({ blobURL, isRecording: false, isUploadable: true });
         this.setState({ blob, file });
       }).catch((e) => console.log(e));
   };
 
-  handleAudioFile = () => {
-    const file = this.state.file;
-    const fileName = file.name.concat('.mp3');
+  handleAudioFile(){
     const fileType = file.type;
-  };
+    const url = 'https://mvqwikiek9.execute-api.us-east-1.amazonaws.com/prod';
+    axios.get(url)
+    .then(response => {
+      var signedRequest = response.data.uploadURL;
+      var options = {
+        headers: {
+          'Content-Type': fileType,
+        }
+      };
+      axios.put(signedRequest,file,options)
+      .then(result => { alert("audio uploaded") })
+      .catch(error => {
+        alert("ERROR " + JSON.stringify(error));
+      })
+    })
+    .catch(error => {
+      alert(JSON.stringify(error));
+    })
+    };
 
   componentDidMount() {
     navigator.getUserMedia({ audio: true },
@@ -68,7 +85,6 @@ class App extends React.Component {
           <button onClick={this.stop} disabled={!this.state.isRecording}>Stop</button>
           <button onClick={this.handleAudioFile} disabled={!this.state.isUploadable}>Upload</button>
           <p>
-          {this.state.blobURL}
           </p>
           <audio src={this.state.blobURL} controls="controls" />
         </header>
