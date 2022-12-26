@@ -87,7 +87,7 @@ class App extends React.Component {
     );
   }
 
-  render({ signOut }){
+  render(){
     return (
       <div className="App">
         <header className="App-header">
@@ -102,5 +102,5 @@ class App extends React.Component {
     );
   }
 }
-//export default App;
+
 export default withAuthenticator(App);
