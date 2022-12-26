@@ -92,5 +92,4 @@ class App extends React.Component {
     );
   }
 }
-//          <button onClick={this.handleaudiofile(fileBlob={this.state.blob})} disabled={this.state.isRecording}>Submit</button>
 export default App;
