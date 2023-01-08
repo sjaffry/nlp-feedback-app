@@ -1,6 +1,4 @@
 import json
-import sys
-import pymongo
 import boto3
 import logging
 import uuid
