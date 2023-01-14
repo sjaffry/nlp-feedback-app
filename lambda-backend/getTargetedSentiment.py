@@ -1,5 +1,6 @@
 import json
 import boto3
+import os
 
 def lambda_handler(event, context):
     
@@ -21,13 +22,15 @@ def lambda_handler(event, context):
 
     # Detect targeted sentiment
     targeted_sentiment = comprehend.detect_targeted_sentiment(Text=text, LanguageCode='en')
+
     objects = []
     object_sentiments = []
-    for i in range(len(targeted_sentiment['Entities'])):
-        objects.append(targeted_sentiment["Entities"][i]["Mentions"][0]["Text"])
-        object_sentiments.append(targeted_sentiment["Entities"][i]["Mentions"][0]["MentionSentiment"]["Sentiment"])
+    for i in range(len(targeted_sentiment["Entities"])):
+        for j in range(len(targeted_sentiment["Entities"][i]["Mentions"])):
+            if targeted_sentiment["Entities"][i]["Mentions"][j]["Type"] in ["ATTRIBUTE", "OTHER"]:
+                objects.append(targeted_sentiment["Entities"][i]["Mentions"][j]["Text"])
+                object_sentiments.append(targeted_sentiment["Entities"][i]["Mentions"][j]["MentionSentiment"]["Sentiment"])
     
     output = {objects[i]: object_sentiments[i] for i in range(len(objects))}
-    
     return output
 

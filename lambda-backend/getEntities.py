@@ -1,5 +1,6 @@
 import json
 import boto3
+import os
 
 def lambda_handler(event, context):
     
@@ -22,9 +23,9 @@ def lambda_handler(event, context):
 
     business_name = response['Entities'][0]['Text']
 
-    # Let's organize the transcript files into each business sub-folder
+    # Let's p the transcript files into each business sub-folder
     newKey = '{}/{}/{}.json'.format(transcribe_output_prefix,business_name,job_name)
-    putResponse = s3.put_object(Body = data, Bucket = bucket, Key = newKey);
+    putResponse = s3.put_object(Body = content, Bucket = bucket, Key = newKey);
 
     output = {
         'business_name': business_name,

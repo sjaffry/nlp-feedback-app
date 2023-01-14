@@ -1,5 +1,6 @@
 import json
 import boto3
+import os
 
 def lambda_handler(event, context):
     
@@ -9,7 +10,7 @@ def lambda_handler(event, context):
     transcribe_output_prefix = 'transcribe-output'
     job_name = event['transcript_job_name']
     job_timestamp = event['interaction_date_time']
-    business_name = event['business_name'][0]
+    business_name = event['business_name']
     
     # Opening JSON file
     key = '{}/{}/{}.json'.format(transcribe_output_prefix,business_name,job_name)
