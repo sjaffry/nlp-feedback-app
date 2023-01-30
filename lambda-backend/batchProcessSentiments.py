@@ -87,11 +87,12 @@ def lambda_handler(event, context):
     GUID = uuid.uuid1().int>>64 # this is our interaction_id
     bucket = 'nlp-feedback-app'
     business_name = event['business_name']
-    batch_output_prefix = 'batch/output/{}/output'.format(business_name)     
+    sentiment_job_name = event['sentiment_job_name']
+    ts_job_name = event['ts_job_name']
+    batch_output_prefix = 'batch/output/{}'.format(business_name)    
     
     # Let's open Overall Sentiment compressed file
-    overall_sentiment_job = event['overall_sentiment_job_name']
-    key = '{}/{}/output/output.tar.gz'.format(batch_output_prefix, overall_sentiment_job)
+    key = '{}/{}/output/output.tar.gz'.format(batch_output_prefix, sentiment_job_name)
     data = s3.get_object(Bucket=bucket, Key=key)
     content = data['Body'].read()
     read_and_process_batchfile(GUID, business_name, content, 'overall_sentiment');
@@ -100,7 +101,7 @@ def lambda_handler(event, context):
     # Let's open Targeted Sentiment compressed file. Each line in targeted sentiment correspond to each line 
     # of overlal sentiment in the right order
     targeted_sentiment_job = event['targeted_sentiment_job_name']
-    key = '{}/{}/output/output.tar.gz'.format(batch_output_prefix, targeted_sentiment_job)
+    key = '{}/{}/output/output.tar.gz'.format(batch_output_prefix, ts_job_name)
     data = s3.get_object(Bucket=bucket, Key=key)
     content = data['Body'].read()
     read_and_process_batchfile(GUID, business_name, content, 'targeted_sentiment');
