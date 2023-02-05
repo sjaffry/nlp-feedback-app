@@ -3,15 +3,7 @@ import './App.css';
 import axios from "axios";
 import MicRecorder from 'mic-recorder-to-mp3';
 import logo from "./logo.svg";
-import "@aws-amplify/ui-react/styles.css";
-import {
-  withAuthenticator,
-  Button,
-  Heading,
-  Image,
-  View,
-  Card,
-} from "@aws-amplify/ui-react";
+//import "@aws-amplify/ui-react/styles.css";
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 let file;
@@ -103,4 +95,4 @@ class App extends React.Component {
   }
 }
 
-export default withAuthenticator(App);
+export default App;
