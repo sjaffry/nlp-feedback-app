@@ -82,20 +82,20 @@ class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          <div>
           <Button icon labelPosition='left' onClick={this.start} disabled={this.state.isRecording} color='blue' size='massive'>
             <Icon name='microphone' />
             Record
           </Button>
+          <p></p>
           <Button icon labelPosition='left' onClick={this.stop} disabled={!this.state.isRecording}>
             <Icon name='stop' />
             Stop
           </Button>
+          <p></p>
           <Button icon labelPosition='left' onClick={this.handleAudioFile} disabled={!this.state.isUploadable}>
             <Icon name='upload' />
             Upload
           </Button>
-          </div>  
           <p></p>
           <audio src={this.state.blobURL} controls="controls" />
         </header>
