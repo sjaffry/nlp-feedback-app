@@ -8,12 +8,14 @@ const URL_EXPIRATION_SECONDS = 300
 
 // Main Lambda entry point
 exports.handler = async (event) => {
-  return await getUploadURL(event)
+  const business_name = event["queryStringParameters"]["business_name"]
+  const email = event["queryStringParameters"]["email"]
+  return await getUploadURL(business_name)
 }
 
-const getUploadURL = async function(event) {
+const getUploadURL = async function(business_name) {
   const randomID = parseInt(Math.random() * 10000000)
-  const Key = `audio/${randomID}.mp3`
+  const Key = `audio/${business_name}/${randomID}.mp3`
 
   // Get signed URL from S3
   const s3Params = {
@@ -28,7 +30,7 @@ const getUploadURL = async function(event) {
       "statusCode": 200,
       "headers": {
             "Access-Control-Allow-Headers" : "Content-Type",
-            "Access-Control-Allow-Origin": "http://localhost:3000",
+            "Access-Control-Allow-Origin": "https://main.d3dsqwcjkun7bv.amplifyapp.com",
             "Access-Control-Allow-Methods": "OPTIONS,PUT,POST,GET"
         },
       "body": JSON.stringify({
@@ -40,3 +42,4 @@ const getUploadURL = async function(event) {
 
   return response;
 }
+
