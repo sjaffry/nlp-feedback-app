@@ -2,8 +2,7 @@ import React from 'react';
 import './App.css';
 import axios from "axios";
 import MicRecorder from 'mic-recorder-to-mp3';
-import logo from "./logo.svg";
-//import "@aws-amplify/ui-react/styles.css";
+import { Button, Icon } from 'semantic-ui-react';
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 let file;
@@ -83,11 +82,21 @@ class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          <button onClick={this.start} disabled={this.state.isRecording}>Record</button>
-          <button onClick={this.stop} disabled={!this.state.isRecording}>Stop</button>
-          <button onClick={this.handleAudioFile} disabled={!this.state.isUploadable}>Upload</button>
-          <p>
-          </p>
+          <div>
+          <Button icon labelPosition='left' onClick={this.start} disabled={this.state.isRecording} color='blue' size='massive'>
+            <Icon name='microphone' />
+            Record
+          </Button>
+          <Button icon labelPosition='left' onClick={this.stop} disabled={!this.state.isRecording}>
+            <Icon name='stop' />
+            Stop
+          </Button>
+          <Button icon labelPosition='left' onClick={this.handleAudioFile} disabled={!this.state.isUploadable}>
+            <Icon name='upload' />
+            Upload
+          </Button>
+          </div>  
+          <p></p>
           <audio src={this.state.blobURL} controls="controls" />
         </header>
       </div>
