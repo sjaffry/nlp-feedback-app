@@ -10,6 +10,7 @@ def lambda_handler(event, context):
     transcribe_output_prefix = 'transcribe-output'
     job_name = event['transcript_job_name']
     job_timestamp = event['interaction_date_time']
+    business_name = event['business_name']
     
     # Opening JSON file
     key = '{}/{}.json'.format(transcribe_output_prefix,job_name)
@@ -20,8 +21,6 @@ def lambda_handler(event, context):
 
     # Detect entities
     response = comprehend.detect_entities(Text = text, LanguageCode="en")
-
-    business_name = response['Entities'][0]['Text']
 
     # Let's p the transcript files into each business sub-folder
     newKey = '{}/{}/{}.json'.format(transcribe_output_prefix,business_name,job_name)
