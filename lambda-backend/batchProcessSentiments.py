@@ -8,6 +8,9 @@ from io import BytesIO
 from botocore.exceptions import ClientError
 from decimal import Decimal
 
+# TO DO - MAKE DYNAMO CALLS BATCH
+
+
 logger = logging.getLogger(__name__)
 s3 = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
@@ -42,12 +45,13 @@ def recordSentiment(interaction_id, business_name, sentiment):
     
     return 'success'
 
-def recordTargetedSentiment(interaction_id, object_name, sentiment):
+def recordTargetedSentiment(interaction_id, business_name, object_name, sentiment):
     targetedSentimentTbl = dynamodb.Table('Targeted_sentiment')
     try:
         targetedSentimentTbl.put_item(
             Item={
                 'interaction_id': interaction_id,
+                'business_name': business_name,
                 'object_name': object_name,
                 'sentiment': sentiment
             }
@@ -72,12 +76,12 @@ def read_and_process_batchfile(interaction_id, business_name, content, file_type
                 if not line:
                     break
                 if file_type == 'targeted_sentiment':
-                    x = filteredSentiment(json.loads(line))
-                    for key in x:
-                        recordTargetedSentiment(interaction_id, key, x[key])
+                    ts_record = filteredSentiment(json.loads(line));
+                    for key in ts_record:
+                        recordTargetedSentiment(interaction_id, business_name, key, ts_record[key])
                 elif file_type == 'overall_sentiment':
-                    x = json.loads(line)
-                    recordSentiment(interaction_id, business_name, x["Sentiment"])
+                    s_record = json.loads(line)
+                    recordSentiment(interaction_id, business_name, s_record["Sentiment"])
                 else:
                     raise "invalid file type"
     return 'success'
@@ -100,7 +104,6 @@ def lambda_handler(event, context):
     
     # Let's open Targeted Sentiment compressed file. Each line in targeted sentiment correspond to each line 
     # of overlal sentiment in the right order
-    targeted_sentiment_job = event['targeted_sentiment_job_name']
     key = '{}/{}/output/output.tar.gz'.format(batch_output_prefix, ts_job_name)
     data = s3.get_object(Bucket=bucket, Key=key)
     content = data['Body'].read()
