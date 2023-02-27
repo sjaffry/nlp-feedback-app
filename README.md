@@ -2,6 +2,12 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Still to fix list
+### Targeted sentiment object names
+- Spelling correction of words
+- Plural vs singular
+- Long form vs short e.g. "French fries vs fries"
+
 ## Available Scripts
 
 In the project directory, you can run:
