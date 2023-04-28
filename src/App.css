@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
+.mic-button {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background-color: #1a4eea;
+  border: none;
+  outline: #f3f6f3;
+  cursor: pointer;
+}
+
+.mic-button.recording {
+  background-color: #00ff00;
+}

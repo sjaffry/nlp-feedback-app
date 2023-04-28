@@ -18,6 +18,21 @@ class App extends React.Component {
     };
   }
 
+
+  handleMicClick = () => {
+    if (this.state.isRecording) {
+      this.setState({ isRecording: false });
+      // Start processing the recording
+      this.stop();
+      }
+    else if (!this.state.isRecording) {
+      this.setState({ isRecording: true });
+      // Start recording
+      this.start();
+    }
+    else {}
+  }
+  
   start = () => {
     if (this.state.isBlocked) {
       console.log('Permission Denied');
@@ -43,7 +58,7 @@ class App extends React.Component {
       }).catch((e) => console.log(e));
   };
 
-  handleAudioFile(){
+  handleAudioFile = () => {
     const queryParams = new URLSearchParams(window.location.search)
     const business_name = queryParams.get("business_name")
     const email = queryParams.get("email")
@@ -69,7 +84,7 @@ class App extends React.Component {
     })
     };
 
-  componentDidMount() {
+  componentDidMount = () => {
     navigator.getUserMedia({ audio: true },
       () => {
         console.log('Permission Granted');
@@ -82,26 +97,24 @@ class App extends React.Component {
     );
   }
 
-  render(){
+  render = () => {
     return (
       <div className="App">
         <header className="App-header">
-          <Button icon labelPosition='left' onClick={this.start} disabled={this.state.isRecording} color='blue' size='massive'>
-            <Icon name='microphone' />
+          <button 
+            className={`mic-button ${this.state.isRecording ? 'recording' : ''}`} 
+            onClick={this.handleMicClick}
+          >
+            <i className="fas fa-microphone fa-5x"></i>
             Record
-          </Button>
+          </button>
           <p></p>
-          <Button icon labelPosition='left' onClick={this.stop} disabled={!this.state.isRecording}>
-            <Icon name='stop' />
-            Stop
-          </Button>
+          <audio src={this.state.blobURL} controls="controls" />
           <p></p>
           <Button icon labelPosition='left' onClick={this.handleAudioFile} disabled={!this.state.isUploadable}>
             <Icon name='upload' />
             Upload
           </Button>
-          <p></p>
-          <audio src={this.state.blobURL} controls="controls" />
         </header>
       </div>
     );
