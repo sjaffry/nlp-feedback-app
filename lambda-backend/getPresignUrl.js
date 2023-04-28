@@ -30,7 +30,7 @@ const getUploadURL = async function(business_name) {
       "statusCode": 200,
       "headers": {
             "Access-Control-Allow-Headers" : "Content-Type",
-            "Access-Control-Allow-Origin": "https://main.d3dsqwcjkun7bv.amplifyapp.com",
+            "Access-Control-Allow-Origin": "https://www.shoutavouch.com",
             "Access-Control-Allow-Methods": "OPTIONS,PUT,POST,GET"
         },
       "body": JSON.stringify({
@@ -42,4 +42,3 @@ const getUploadURL = async function(business_name) {
 
   return response;
 }
-
