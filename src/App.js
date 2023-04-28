@@ -3,6 +3,9 @@ import './App.css';
 import axios from "axios";
 import MicRecorder from 'mic-recorder-to-mp3';
 import { Button, Icon } from 'semantic-ui-react';
+import '@fortawesome/fontawesome-free/css/all.css';
+import '@fortawesome/fontawesome-free/js/all.js';
+
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 let file;
@@ -106,7 +109,6 @@ class App extends React.Component {
             onClick={this.handleMicClick}
           >
             <i className="fas fa-microphone fa-5x"></i>
-            Record
           </button>
           <p></p>
           <audio src={this.state.blobURL} controls="controls" />
