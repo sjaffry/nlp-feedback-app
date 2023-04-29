@@ -15,7 +15,6 @@ class App extends React.Component {
     this.state = {
       isRecording: false,
       isUploadable: false,
-      blobURL: '',
       isBlocked: false,
     };
   };
@@ -104,12 +103,11 @@ class App extends React.Component {
         <header className="App-header">
           <button 
             className={`mic-button ${this.state.isRecording ? 'recording' : ''}`} 
-            onClick={this.handleMicClick}
-          >
+            onClick={this.handleMicClick}>
             <i className="fas fa-microphone fa-5x"></i>
           </button>
           <p></p>
-          <audio src={this.state.blobURL} controls="controls" />
+          <audio src={this.state.blobURL} controls="controls"/>
           <p></p>
           <Button icon labelPosition='left' onClick={this.handleAudioFile} disabled={!this.state.isUploadable}>
             <Icon name='upload' />
