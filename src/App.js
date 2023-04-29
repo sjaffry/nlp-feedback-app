@@ -6,7 +6,6 @@ import { Button, Icon } from 'semantic-ui-react';
 import '@fortawesome/fontawesome-free/css/all.css';
 import '@fortawesome/fontawesome-free/js/all.js';
 
-
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 let file;
 
@@ -19,8 +18,7 @@ class App extends React.Component {
       blobURL: '',
       isBlocked: false,
     };
-  }
-
+  };
 
   handleMicClick = () => {
     if (this.state.isRecording) {
@@ -34,7 +32,7 @@ class App extends React.Component {
       this.start();
     }
     else {}
-  }
+  };
   
   start = () => {
     if (this.state.isBlocked) {
@@ -85,10 +83,10 @@ class App extends React.Component {
     .catch(error => {
       alert(JSON.stringify(error));
     })
-    };
+  };
 
   componentDidMount = () => {
-    navigator.getUserMedia({ audio: true },
+    navigator.mediaDevices.getUserMedia({ audio: true },
       () => {
         console.log('Permission Granted');
         this.setState({ isBlocked: false });
@@ -98,7 +96,7 @@ class App extends React.Component {
         this.setState({ isBlocked: true })
       },
     );
-  }
+  };
 
   render = () => {
     return (
@@ -120,7 +118,7 @@ class App extends React.Component {
         </header>
       </div>
     );
-  }
-}
+  };
+};
 
 export default App;
