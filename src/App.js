@@ -5,9 +5,20 @@ import MicRecorder from 'mic-recorder-to-mp3';
 import { Button, Icon } from 'semantic-ui-react';
 import '@fortawesome/fontawesome-free/css/all.css';
 import '@fortawesome/fontawesome-free/js/all.js';
+import { RotatingSquare } from  'react-loader-spinner'
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 let file;
+<RotatingSquare 
+    height="100"
+    width="100"
+    color="#4fa94d"
+    ariaLabel="rotating-square-loading"
+    strokeWidth="4"
+    wrapperStyle={{}}
+    wrapperClass=""
+    visible={true}/>
+
 
 class App extends React.Component {
   constructor(props){
@@ -16,6 +27,7 @@ class App extends React.Component {
       isRecording: false,
       isUploadable: false,
       isBlocked: false,
+      showSpinner: false,
     };
   };
 
@@ -59,9 +71,10 @@ class App extends React.Component {
   };
 
   handleAudioFile = () => {
-    const queryParams = new URLSearchParams(window.location.search)
-    const business_name = queryParams.get("business_name")
-    const email = queryParams.get("email")
+    this.setState({showSpinner: true});
+    const queryParams = new URLSearchParams(window.location.search);
+    const business_name = queryParams.get("business_name");
+    const email = queryParams.get("email");
     const fileType = file.type;
     const url = "https://mvqwikiek9.execute-api.us-east-1.amazonaws.com/prod?"
     const signUrl = url.concat("business_name="+business_name+"&email="+email);
@@ -82,6 +95,7 @@ class App extends React.Component {
     .catch(error => {
       alert(JSON.stringify(error));
     })
+    this.setState({showSpinner: false})
   };
 
   componentDidMount = () => {
@@ -113,6 +127,7 @@ class App extends React.Component {
             <Icon name='upload' />
             Upload
           </Button>
+          {this.state.showSpinner && <RotatingSquare />}
         </header>
       </div>
     );
