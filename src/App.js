@@ -9,15 +9,15 @@ import { RotatingSquare } from  'react-loader-spinner'
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 let file;
-<RotatingSquare 
-    height="100"
-    width="100"
-    color="#4fa94d"
-    ariaLabel="rotating-square-loading"
-    strokeWidth="4"
-    wrapperStyle={{}}
-    wrapperClass=""
-    visible={true}/>
+//<RotatingSquare 
+//    height="500"
+//    width="500"
+//    color="#ffffff"
+//    ariaLabel="rotating-square-loading"
+//    strokeWidth="4"
+//    wrapperStyle={{}}
+ //   wrapperClass=""
+//    visible={true}/>
 
 
 class App extends React.Component {
@@ -69,9 +69,8 @@ class App extends React.Component {
         this.setState({ blob, file });
       }).catch((e) => console.log(e));
   };
-
+  
   handleAudioFile = () => {
-    this.setState({showSpinner: true});
     const queryParams = new URLSearchParams(window.location.search);
     const business_name = queryParams.get("business_name");
     const email = queryParams.get("email");
@@ -86,8 +85,13 @@ class App extends React.Component {
           'Content-Type': fileType,
         }
       };
+      this.setState({ showSpinner: true });
       axios.put(signedRequest,file,options)
-      .then(result => { alert("audio uploaded") })
+      .then(
+        result => { 
+          this.setState({ showSpinner: false });
+          alert("Thank you for your feedback!") 
+        })
       .catch(error => {
         alert("ERROR " + JSON.stringify(error));
       })
@@ -95,7 +99,6 @@ class App extends React.Component {
     .catch(error => {
       alert(JSON.stringify(error));
     })
-    this.setState({showSpinner: false})
   };
 
   componentDidMount = () => {
@@ -127,7 +130,7 @@ class App extends React.Component {
             <Icon name='upload' />
             Upload
           </Button>
-          {this.state.showSpinner && <RotatingSquare />}
+          {this.state.showSpinner && <RotatingSquare color="#d5d4d4" />}
         </header>
       </div>
     );
