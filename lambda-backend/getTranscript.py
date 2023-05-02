@@ -15,9 +15,14 @@ def lambda_handler(event, context):
     transcribe = boto3.client(service_name='transcribe', region_name='us-east-1')
     audio_filename = event['detail']['object']['key']
     bucket = event['detail']['bucket']['name']
-    transcribe_output_prefix = 'transcribe-output/'
-    audiofile_loc = 's3://{}/{}'.format(bucket, audio_filename)
     business_name = get_business_name(event)
+    
+    # storing filename in Unix time will allow us to retrieve objects after a certain point for later file merging
+    transcript_filename = int(time.time())
+    transcribe_output_prefix = 'transcribe-output/{}/{}.json'.format(business_name, transcript_filename)
+    audiofile_loc = 's3://{}/{}'.format(bucket, audio_filename)
+
+    print(business_name)
     print('Calling StartTranscribe')
     job_name = str(uuid.uuid1())
     

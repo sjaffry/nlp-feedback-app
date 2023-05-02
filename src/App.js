@@ -9,16 +9,6 @@ import { RotatingSquare } from  'react-loader-spinner'
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 let file;
-//<RotatingSquare 
-//    height="500"
-//    width="500"
-//    color="#ffffff"
-//    ariaLabel="rotating-square-loading"
-//    strokeWidth="4"
-//    wrapperStyle={{}}
- //   wrapperClass=""
-//    visible={true}/>
-
 
 class App extends React.Component {
   constructor(props){
