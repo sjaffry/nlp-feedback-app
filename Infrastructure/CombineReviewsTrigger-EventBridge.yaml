@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template for EventBridge rule 'AcmeReviewsTrigger'
+Resources:
+  EventRule0:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: triggers reviews consolidation in S3
+      EventBusName: default
+      Name: AcmeReviewsTrigger
+      ScheduleExpression: rate(1 day)
+      State: ENABLED
+      Targets:
+        - Id: g3hy5soww38vrcqj9xh
+          Arn: arn:aws:lambda:us-east-1:946827581022:function:combineReviews
+          Input: |-
+            {
+              "bucket_name": "nlp-feedback-app",
+              "output_file_key": "transcribe-output/Acme",
+              "input_file_prefix": "transcribe-output/Acme"
+            }
