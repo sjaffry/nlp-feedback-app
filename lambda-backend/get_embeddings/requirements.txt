@@ -1,0 +1,6 @@
+langchain
+boto3
+unstructured
+openai
+tiktoken
+faiss-cpu
