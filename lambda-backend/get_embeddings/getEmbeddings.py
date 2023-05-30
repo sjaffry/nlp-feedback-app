@@ -19,7 +19,7 @@ def lambda_handler(event, context):
         response = s3.get_object(Bucket=bucket_name, Key=file_name)
         content = response['Body'].read().decode('utf-8')
     except Exception as e:
-        print(e)
+        raise ValueError("File not found!")
     
     # Prepare the content for embeddings
     text_splitter = CharacterTextSplitter(chunk_size=150, chunk_overlap=0, separator = " ")
