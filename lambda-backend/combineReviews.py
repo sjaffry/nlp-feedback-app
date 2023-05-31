@@ -35,10 +35,16 @@ def combine_files_in_s3_bucket(bucket_name, output_file_key, input_file_prefix):
 
 def lambda_handler(event, context):
     formatted_date = datetime.now().strftime("%Y%m%d")
-    output_file_key = f"{event['output_file_key']}/{formatted_date}/combinedreviews.txt"
+    bucket_name = event['bucket_name']
+    output_file_prefix = f"{event['output_file_key']}/{formatted_date}"
+    output_file_key = f"{output_file_prefix}/combinedreviews.txt"
     # Call the function to combine files in the bucket
-    combine_files_in_s3_bucket(event['bucket_name'], output_file_key, event['input_file_prefix'])
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Success!')
+    combine_files_in_s3_bucket(bucket_name, output_file_key, event['input_file_prefix'])
+    
+    output = {
+    'file_name': output_file_key,
+    'file_prefix': output_file_prefix,
+    'bucket_name': bucket_name
     }
+
+    return output

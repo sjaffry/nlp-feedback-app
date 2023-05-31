@@ -1,20 +1,21 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: CloudFormation template for EventBridge rule 'AcmeReviewsTrigger'
+Description: CloudFormation template for EventBridge rule 'TeslaReviewsTrigger'
 Resources:
   EventRule0:
     Type: AWS::Events::Rule
     Properties:
       Description: triggers reviews consolidation in S3
       EventBusName: default
-      Name: AcmeReviewsTrigger
+      Name: TeslaReviewsTrigger
       ScheduleExpression: rate(1 day)
       State: ENABLED
       Targets:
-        - Id: g3hy5soww38vrcqj9xh
-          Arn: arn:aws:lambda:us-east-1:946827581022:function:combineReviews
+        - Id: Id9e2ca404-243f-4d25-a5da-0ca6d3e35218
+          Arn: arn:aws:states:us-east-1:946827581022:stateMachine:ReviewAggregation
+          RoleArn: arn:aws:iam::946827581022:role/lambda_power_execution
           Input: |-
             {
               "bucket_name": "nlp-feedback-app",
-              "output_file_key": "transcribe-output/Acme",
-              "input_file_prefix": "transcribe-output/Acme"
+              "output_file_key": "transcribe-output/Tesla",
+              "input_file_prefix": "transcribe-output/Tesla"
             }
