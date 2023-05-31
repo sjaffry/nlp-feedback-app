@@ -2,7 +2,27 @@ import boto3
 import io
 import json
 from datetime import datetime
+import os
+
+def archive_file(bucket_name, file_key, input_file_prefix):
+    s3 = boto3.resource('s3')
+    file_name = os.path.basename(file_key)
+
+    copy_source = {
+        'Bucket': bucket_name,
+        'Key': file_key
+    }
+
+    new_key = f'{input_file_prefix}/archive/{file_name}'
+
+    # Copy the object
+    s3.meta.client.copy(copy_source, bucket_name, new_key)
+
+    # Delete the original object
+    s3.Object(bucket_name, file_key).delete()
     
+    
+
 def combine_files_in_s3_bucket(bucket_name, output_file_key, input_file_prefix):
     # Create a new S3 client
     s3 = boto3.client('s3')
@@ -24,6 +44,7 @@ def combine_files_in_s3_bucket(bucket_name, output_file_key, input_file_prefix):
             transcript_text = json_data["results"]["transcripts"][0]["transcript"]
             if transcript_text is not None:
                 combined_file.write(transcript_text)
+                archive_file(bucket_name, file_key, input_file_prefix)
 
     # Reset the in-memory file pointer to the beginning
     combined_file.seek(0)
