@@ -19,9 +19,9 @@ def lambda_handler(event, context):
 
     api_key = os.environ['openai_api_key']
     bucket_name = os.environ['bucket_name']
-    date_range = event['date_range']
-    business_name = event['business_name']
-    query = event['query']
+    date_range = event["queryStringParameters"]['date_range']
+    business_name = event["queryStringParameters"]['business_name']
+    query = event["queryStringParameters"]['query']
     index_loc=f"transcribe-output/{business_name}/{date_range}/faiss_index"
     index_file = f"{index_loc}/index.faiss"
     pkl_file = f"{index_loc}/index.pkl"
@@ -49,5 +49,10 @@ def lambda_handler(event, context):
 
     return {
             'statusCode': 200,
+            'headers': {
+                "Access-Control-Allow-Headers" : "Content-Type",
+                "Access-Control-Allow-Origin": "https://query.shoutavouch.com",
+                "Access-Control-Allow-Methods": "OPTIONS,PUT,POST,GET"
+        },    
             'body': json.dumps(result)
         }    
