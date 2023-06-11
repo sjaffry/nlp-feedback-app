@@ -1,9 +1,9 @@
 from langchain import OpenAI, PromptTemplate, LLMChain
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.chains.mapreduce import MapReduceChain
-from langchain.prompts import PromptTemplate
 from langchain.docstore.document import Document
 from langchain.chains.summarize import load_summarize_chain
+from langchain.document_loaders import TextLoader
 import os
 import boto3
 import json
@@ -61,11 +61,10 @@ def lambda_handler(event, context):
         print("Files already exists no need to download")
 
     # Break up the combined reviews into chunks
-    text_splitter = CharacterTextSplitter()
-    with open(local_reviews_file) as f:
-        combined_reviews = f.read()
-    texts = text_splitter.split_text(combined_reviews)
-    docs = [Document(page_content=t) for t in texts]
+    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0, separator = " ")
+    loader = TextLoader(local_reviews_file)
+    documents = loader.load()
+    docs = text_splitter.split_documents(documents)
     
     # Initialize the summary chain and run LLM summarization
     try:
