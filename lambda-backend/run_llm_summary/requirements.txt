@@ -1,4 +1,2 @@
-langchain
-tiktoken
 boto3
 openai

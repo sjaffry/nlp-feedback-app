@@ -1,11 +1,6 @@
-from langchain import OpenAI, PromptTemplate, LLMChain
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.chains.mapreduce import MapReduceChain
-from langchain.docstore.document import Document
-from langchain.chains.summarize import load_summarize_chain
-from langchain.document_loaders import TextLoader
 import os
 import boto3
+import openai
 import json
 import base64
 
@@ -35,10 +30,27 @@ def download_reviews_file(bucket_name, reviews_file, local_reviews_file):
         print("Files downloaded successfully.")
     except Exception as e:
         raise ValueError(e)
+    
+def summarize(local_reviews_file):
+
+    # Setup
+    openai.api_key = os.environ['openai_api_key']
+
+    # Read review file
+    with open(local_reviews_file, 'r') as file:
+        text = file.read()
+
+    # Call LLM
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo-16k",
+        messages=[
+            {"role": "system", "content": "You are a summarizing assistant."},
+            {"role": "user", "content": f"Write a 3 paragraph summary of the following explaining the sentiments of people. Mention notable items that were the main causes behind the negative sentiments and positive sentiments: {text} "}
+        ]
+    )
+    return completion.choices[0].message["content"]
 
 def lambda_handler(event, context):
-
-    api_key = os.environ['openai_api_key']
     bucket_name = os.environ['bucket_name']
     date_range = event["queryStringParameters"]['date_range']
     
@@ -60,19 +72,8 @@ def lambda_handler(event, context):
     else:
         print("Files already exists no need to download")
 
-    # Break up the combined reviews into chunks
-    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0, separator = " ")
-    loader = TextLoader(local_reviews_file)
-    documents = loader.load()
-    docs = text_splitter.split_documents(documents)
-    
-    # Initialize the summary chain and run LLM summarization
-    try:
-        llm = OpenAI(openai_api_key=api_key, temperature=0)
-        chain = load_summarize_chain(llm, chain_type="map_reduce")
-        result = chain.run(docs)
-    except Exception as e:
-        raise ValueError(e)
+    # Call OpenAI directly
+    result = summarize(local_reviews_file)
 
     return {
             'statusCode': 200,
