@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import axios from "axios";
 import MicRecorder from 'mic-recorder-to-mp3';
-import { Button, Icon } from 'semantic-ui-react';
+import { Button, Icon, Form, TextArea } from 'semantic-ui-react';
 import '@fortawesome/fontawesome-free/css/all.css';
 import '@fortawesome/fontawesome-free/js/all.js';
 import { RotatingSquare } from  'react-loader-spinner'
@@ -117,14 +117,13 @@ const App = () => {
         <p></p>
         OR
         <p></p>
-        <textarea 
-          rows="6" 
-          cols="30" 
-          placeholder="Write your feedback.."
-          class="textarea-style"
-          onChange={(e) => setTextInput(e.target.value)}
-          >
-        </textarea>
+        <Form>
+          <TextArea 
+            rows="6" 
+            cols="40" 
+            placeholder='Write your feedback..'
+            onChange={(e) => setTextInput(e.target.value)} />
+        </Form>
         <p></p>
         <Button icon labelPosition='left' onClick={handleSubmit}>
           <Icon name='upload' />
