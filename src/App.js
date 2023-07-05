@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import axios from "axios";
 import MicRecorder from 'mic-recorder-to-mp3';
@@ -8,59 +8,61 @@ import '@fortawesome/fontawesome-free/js/all.js';
 import { RotatingSquare } from  'react-loader-spinner'
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
-let file;
 
-class App extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      isRecording: false,
-      isUploadable: false,
-      isBlocked: false,
-      showSpinner: false,
-    };
-  };
+const App = () => {
 
-  handleMicClick = () => {
-    if (this.state.isRecording) {
-      this.setState({ isRecording: false });
+  const [isRecording, setIsRecording] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
+  const [isUploadable, setIsUploadable] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [showSpinner, setShowSpinner] = useState(false);
+  const [textInput, setTextInput] = useState('');
+  const [file, setFile] = useState('');
+
+  const handleMicClick = () => {
+    if (isRecording) {
+      setIsRecording(false);
+      setIsFinished(true);
       // Start processing the recording
-      this.stop();
+      stop();
       }
-    else if (!this.state.isRecording) {
-      this.setState({ isRecording: true });
+    else {
+      setIsRecording(true);
       // Start recording
-      this.start();
+      start();
     }
-    else {}
   };
   
-  start = () => {
-    if (this.state.isBlocked) {
+  const start = () => {
+    if (isBlocked) {
       console.log('Permission Denied');
     } else {
       Mp3Recorder
         .start()
         .then(() => {
-          this.setState({ isRecording: true });
+          setIsRecording(true);
         }).catch((e) => console.error(e));
     }
   };
 
-  stop = () => {
+  const stop = () => {
     Mp3Recorder
       .stop()
       .getMp3()
       .then(([buffer, blob]) => {
-        const blobURL = URL.createObjectURL(blob);
         let d = new Date();
-        file = new File([blob],d.valueOf().toString(),{ type:"application/octet-stream" });
-        this.setState({ blobURL, isRecording: false, isUploadable: true });
-        this.setState({ blob, file });
+        setFile(new File([blob],d.valueOf().toString(),{ type:"application/octet-stream" }));
+        setIsRecording(false);
+        setIsUploadable(true);
       }).catch((e) => console.log(e));
   };
   
-  handleAudioFile = () => {
+  const handleSubmit = () => {
+    // Form validation
+    if (!textInput.trim() && !isUploadable) {
+      alert('Please record or enter feedback first!');
+      return;
+    }
     const queryParams = new URLSearchParams(window.location.search);
     const business_name = queryParams.get("business_name");
     const email = queryParams.get("email");
@@ -75,11 +77,11 @@ class App extends React.Component {
           'Content-Type': fileType,
         }
       };
-      this.setState({ showSpinner: true });
+      setShowSpinner(true);
       axios.put(signedRequest,file,options)
       .then(
         result => { 
-          this.setState({ showSpinner: false });
+          setShowSpinner(false);
           alert("Thank you for your feedback!") 
         })
       .catch(error => {
@@ -91,40 +93,47 @@ class App extends React.Component {
     })
   };
 
-  componentDidMount = () => {
+  useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true },
       () => {
         console.log('Permission Granted');
-        this.setState({ isBlocked: false });
+        setIsBlocked(false);
       },
       () => {
         console.log('Permission Denied');
-        this.setState({ isBlocked: true })
+        setIsBlocked(true);
       },
     );
-  };
+  }, []);
 
-  render = () => {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <button 
-            className={`mic-button ${this.state.isRecording ? 'recording' : ''}`} 
-            onClick={this.handleMicClick}>
-            <i className="fas fa-microphone fa-5x"></i>
-          </button>
-          <p></p>
-          <audio src={this.state.blobURL} controls="controls"/>
-          <p></p>
-          <Button icon labelPosition='left' onClick={this.handleAudioFile} disabled={!this.state.isUploadable}>
-            <Icon name='upload' />
-            Upload
-          </Button>
-          {this.state.showSpinner && <RotatingSquare color="#d5d4d4" />}
-        </header>
-      </div>
-    );
-  };
-};
+  return (
+    <div className="App">
+      <header className="App-header">
+        <button 
+          className={`mic-button ${isRecording ? 'recording' : (isFinished ? 'finished' : '')}`} 
+          onClick={handleMicClick}>
+          <i className="fas fa-microphone fa-5x"></i>
+        </button>
+        <p></p>
+        OR
+        <p></p>
+        <textarea 
+          rows="6" 
+          cols="30" 
+          placeholder="Write your feedback.."
+          class="textarea-style"
+          onChange={(e) => setTextInput(e.target.value)}
+          >
+        </textarea>
+        <p></p>
+        <Button icon labelPosition='left' onClick={handleSubmit}>
+          <Icon name='upload' />
+          Submit
+        </Button>
+        {showSpinner && <RotatingSquare color="#d5d4d4" />}
+      </header>
+    </div>
+  );
+}
 
 export default App;
