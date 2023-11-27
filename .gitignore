@@ -11,6 +11,8 @@
 # production
 /build
 /scratch
+/lambda_layers
+/data
 
 # misc
 .DS_Store

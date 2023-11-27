@@ -1,6 +1,5 @@
 import os
 import boto3
-import openai
 import json
 import base64
 
@@ -33,22 +32,23 @@ def download_reviews_file(bucket_name, reviews_file, local_reviews_file):
     
 def summarize(local_reviews_file):
 
-    # Setup
-    openai.api_key = os.environ['openai_api_key']
-
     # Read review file
     with open(local_reviews_file, 'r') as file:
         text = file.read()
 
     # Call LLM
-    completion = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-16k",
-        messages=[
-            {"role": "system", "content": "You are a summarizing assistant."},
-            {"role": "user", "content": f"Write a 3 paragraph summary of the following explaining the sentiments of people. Mention notable items that were the main causes behind the negative sentiments and positive sentiments: {text} "}
-        ]
-    )
-    return completion.choices[0].message["content"]
+    bedrock = boto3.client('bedrock-runtime')
+    body = json.dumps({
+        "prompt": f"\n\nHuman: create a summary of the following:\n{text} \n\nAssistant:",
+        "max_tokens_to_sample": 800,
+        "temperature": 0.5
+    })
+    modelId = 'anthropic.claude-v2'
+    accept = 'application/json'
+    contentType = 'application/json'
+
+    response = bedrock.invoke_model(body=body, modelId=modelId, accept=accept, contentType=contentType)
+    return json.loads(response.get('body').read())
 
 def lambda_handler(event, context):
     bucket_name = os.environ['bucket_name']
@@ -82,5 +82,5 @@ def lambda_handler(event, context):
                 "Access-Control-Allow-Origin": "https://query.shoutavouch.com",
                 "Access-Control-Allow-Methods": "OPTIONS,PUT,POST,GET"
         },    
-            'body': json.dumps(result)
+            'body': result.get('completion')
         }    

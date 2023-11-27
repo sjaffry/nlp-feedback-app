@@ -1,7 +1,9 @@
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.llms import OpenAI
+from langchain.embeddings import BedrockEmbeddings
+from langchain.llms import Bedrock
 from langchain.chains import RetrievalQA
 from langchain.vectorstores import FAISS
+from langchain.chains import ConversationalRetrievalChain
+from langchain.memory import ConversationSummaryMemory
 import os
 import boto3
 import json
@@ -41,10 +43,10 @@ def download_index_files(bucket_name, index_file, pkl_file, local_index_file, lo
 
 def lambda_handler(event, context):
 
-    api_key = os.environ['openai_api_key']
     bucket_name = os.environ['bucket_name']
     date_range = event["queryStringParameters"]['date_range']
     query = event["queryStringParameters"]['query']
+    prompt_prefix = "Respond in English only. "
     
     # Let's extract the business name from the token by looking at the group memebership of the user
     token = event['headers']['Authorization']
@@ -56,7 +58,7 @@ def lambda_handler(event, context):
     index_loc=f"transcribe-output/{business_name}/{date_range}/faiss_index"
     index_file = f"{index_loc}/index.faiss"
     pkl_file = f"{index_loc}/index.pkl"
-    local_path = f"/tmp/faiss_index_{business_name}"
+    local_path = f"/tmp/{date_range}/faiss_index_{business_name}"
     local_index_file = f"{local_path}/index.faiss"
     local_pkl_file = f"{local_path}/index.pkl"
 
@@ -66,13 +68,32 @@ def lambda_handler(event, context):
     else:
         print("Files already exists no need to download")
 
+    #Bedrock client
+    bedrock_runtime = boto3.client(
+        service_name="bedrock-runtime",
+        region_name="us-east-1"
+    )
+
+    embeddings = BedrockEmbeddings(
+    model_id="amazon.titan-embed-text-v1",
+    client=bedrock_runtime,
+    region_name="us-east-1",
+    )
+
     # Load faiss index
-    docsearch = FAISS.load_local(local_path, OpenAIEmbeddings(openai_api_key=api_key))
+    docsearch = FAISS.load_local(local_path, embeddings)
+
+    llm = Bedrock(
+        model_id="anthropic.claude-v2", client=bedrock_runtime, region_name="us-east-1"
+    )
+    memory = ConversationSummaryMemory(
+        llm=llm, memory_key="chat_history", return_messages=True
+    )
 
     # Initialize the retrieval chain and run LLM query
     try:
-        qa = RetrievalQA.from_chain_type(OpenAI(openai_api_key=api_key), chain_type="stuff", retriever=docsearch.as_retriever())
-        result = qa.run(query)
+        qa = ConversationalRetrievalChain.from_llm(llm, retriever=docsearch.as_retriever(), memory=memory)
+        result = qa.run(prompt_prefix+query)
     except Exception as e:
         raise ValueError(e)
 
