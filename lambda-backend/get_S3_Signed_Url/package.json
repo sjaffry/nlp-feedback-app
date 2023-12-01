@@ -1,5 +1,5 @@
 {
-  "name": "getPresignUrl",
+  "name": "getS3SignedUrl",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

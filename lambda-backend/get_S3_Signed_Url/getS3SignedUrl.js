@@ -8,12 +8,13 @@ const URL_EXPIRATION_SECONDS = 300
 // Main Lambda entry point
 exports.handler = async (event) => {
   const business_name = event["queryStringParameters"]["business_name"]
-  return await getUploadURL(business_name)
+  const upload_type = event["queryStringParameters"]["upload_type"]
+  return await getUploadURL(business_name, upload_type)
 }
 
-const getUploadURL = async function(business_name) {
+const getUploadURL = async function(business_name, upload_type) {
   const randomID = parseInt(Math.random() * 10000000)
-  const Key = `audio/${business_name}/${randomID}.mp3`
+  const Key = `${upload_type}/${business_name}/${randomID}`
 
   // Get signed URL from S3
   const s3Params = {
@@ -28,7 +29,7 @@ const getUploadURL = async function(business_name) {
       "statusCode": 200,
       "headers": {
             "Access-Control-Allow-Headers" : "Content-Type",
-            "Access-Control-Allow-Origin": "https://www.shoutavouch.com",
+            "Access-Control-Allow-Origin": "https://query.shoutavouch.com",
             "Access-Control-Allow-Methods": "OPTIONS,PUT,POST,GET"
         },
       "body": JSON.stringify({

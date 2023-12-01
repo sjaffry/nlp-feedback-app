@@ -58,11 +58,14 @@ def lambda_handler(event, context):
     index_loc=f"transcribe-output/{business_name}/{date_range}/faiss_index"
     index_file = f"{index_loc}/index.faiss"
     pkl_file = f"{index_loc}/index.pkl"
-    local_path = f"/tmp/{date_range}/faiss_index_{business_name}"
+    local_path_prefix = f"/tmp/{date_range}"
+    local_path = f'{local_path_prefix}/faiss_index_{business_name}'
     local_index_file = f"{local_path}/index.faiss"
     local_pkl_file = f"{local_path}/index.pkl"
 
     if not(os.path.isfile(local_index_file) and os.path.isfile(local_pkl_file)):
+            print("Files don't exist")
+            os.mkdir(local_path_prefix)
             os.mkdir(local_path)
             download_index_files(bucket_name, index_file, pkl_file, local_index_file, local_pkl_file)
     else:
@@ -82,9 +85,13 @@ def lambda_handler(event, context):
 
     # Load faiss index
     docsearch = FAISS.load_local(local_path, embeddings)
+    model_kwargs = {
+    'max_tokens_to_sample': 1000,
+    'temperature': 1.0
+    }
 
     llm = Bedrock(
-        model_id="anthropic.claude-v2", client=bedrock_runtime, region_name="us-east-1"
+        model_id="anthropic.claude-v2", model_kwargs=model_kwargs, client=bedrock_runtime, region_name="us-east-1"
     )
     memory = ConversationSummaryMemory(
         llm=llm, memory_key="chat_history", return_messages=True

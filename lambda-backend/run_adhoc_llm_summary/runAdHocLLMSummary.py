@@ -1,5 +1,8 @@
-import os
 import boto3
+import os
+from io import BytesIO, StringIO
+import PyPDF2
+import csv
 import json
 import base64
 
@@ -23,24 +26,40 @@ def decode_jwt(token):
     return json.loads(payload)
 
 def lambda_handler(event, context):
-
+    
     bucket_name = os.environ['bucket_name']
-    date_range = event["queryStringParameters"]['date_range']
+    file_name = event["queryStringParameters"]['file_name']
     
     # Let's extract the business name from the token by looking at the group memebership of the user
     token = event['headers']['Authorization']
     decoded = decode_jwt(token)
     # We only ever expect the user to be in one group only - business rule
     business_name = decoded['cognito:groups'][0]
-    folder_loc=f"transcribe-output/{business_name}/{date_range}"
-    reviews_file = f"{folder_loc}/combinedreviews.txt"
+    folder_loc=f"document/{business_name}"
+    reviews_file = f"{folder_loc}/{file_name}"
 
     try:
         # Fetch the file from S3
         s3 = boto3.client('s3')
         response = s3.get_object(Bucket=bucket_name, Key=reviews_file)
-        file_data = response['Body'].read()
+        file_content = response['Body'].read()
+        fileType = response['ContentType']
+        print("fileType= "+fileType)
         
+        # Decide the file type
+        if fileType == 'application/pdf':
+            # Process PDF
+            pdf_reader = PyPDF2.PdfReader(BytesIO(file_content))
+            file_data = [pdf_reader.pages[page].extract_text() for page in range(len(pdf_reader.pages))]
+        elif fileType == 'text/csv':
+            # Process CSV
+            csv_file = StringIO(file_content.decode('utf-8'))
+            csv_reader = csv.reader(csv_file)
+            file_data = [row for row in csv_reader]
+        else:
+            # Unsupported file type
+            raise ValueError("Unsupported file type")
+            
         # Call Bedrock for LLM summary
         bedrock = boto3.client('bedrock-runtime')
         body = json.dumps({
@@ -55,7 +74,7 @@ def lambda_handler(event, context):
         response = bedrock.invoke_model(body=body, modelId=modelId, accept=accept, contentType=contentType)
 
         response_body = json.loads(response.get('body').read())
-    
+
         return {
                 'statusCode': 200,
                 'headers': {
@@ -64,7 +83,7 @@ def lambda_handler(event, context):
                     "Access-Control-Allow-Methods": "OPTIONS,PUT,POST,GET"
             },    
                 'body': response_body.get('completion')
-            }    
+            }  
     except Exception as e:
         print(e)
         raise e

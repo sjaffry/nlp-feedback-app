@@ -68,7 +68,7 @@ const App = () => {
     const email = queryParams.get("email");
     const fileType = file.type;
     const url = "https://mvqwikiek9.execute-api.us-east-1.amazonaws.com/prod?"
-    const signUrl = url.concat("business_name="+business_name+"&email="+email);
+    const signUrl = url.concat("business_name="+business_name+"&email="+email+"&upload_type=audio");
     axios.get(signUrl)
     .then(response => {
       var signedRequest = response.data.uploadURL;

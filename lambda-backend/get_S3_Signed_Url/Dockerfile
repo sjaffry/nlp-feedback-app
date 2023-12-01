@@ -5,6 +5,6 @@ COPY package*.json ./
 
 RUN npm install
 
-COPY getPresignUrl.js ./
+COPY getS3SignedUrl.js ./
 
-CMD ["getPresignUrl.handler"]
+CMD ["getS3SignedUrl.handler"]
