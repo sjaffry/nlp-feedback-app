@@ -9,12 +9,13 @@ const URL_EXPIRATION_SECONDS = 300
 exports.handler = async (event) => {
   const business_name = event["queryStringParameters"]["business_name"]
   const upload_type = event["queryStringParameters"]["upload_type"]
-  return await getUploadURL(business_name, upload_type)
+  const file_name = event["queryStringParameters"]["file_name"]
+  return await getUploadURL(business_name, upload_type, file_name)
 }
 
-const getUploadURL = async function(business_name, upload_type) {
+const getUploadURL = async function(business_name, upload_type, file_name) {
   const randomID = parseInt(Math.random() * 10000000)
-  const Key = `${upload_type}/${business_name}/${randomID}`
+  const Key = `${upload_type}/${business_name}/${file_name}`
 
   // Get signed URL from S3
   const s3Params = {
