@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import axios from "axios";
 import MicRecorder from 'mic-recorder-to-mp3';
-import { Button, Icon, Form, TextArea } from 'semantic-ui-react';
+import { Button, Icon } from 'semantic-ui-react';
 import '@fortawesome/fontawesome-free/css/all.css';
 import '@fortawesome/fontawesome-free/js/all.js';
 import { RotatingSquare } from  'react-loader-spinner'
@@ -115,8 +115,7 @@ const App = () => {
           <i className="fas fa-microphone fa-5x"></i>
         </button>
         <p></p>
-        <Button icon labelPosition='left' onClick={handleSubmit}>
-          <Icon name='upload' />
+        <Button icon  size='massive' onClick={handleSubmit}>
           Submit
         </Button>
         {showSpinner && <RotatingSquare color="#d5d4d4" />}
