@@ -64,7 +64,7 @@ def lambda_handler(event, context):
         bedrock = boto3.client('bedrock-runtime')
         body = json.dumps({
                         "prompt": f"\n\nHuman: create a summary of the following and also provide top 5 recommendations based on it. Label the summary with \"Summary\" and recommendations with \"Top 5 recommendations\":\n{file_data} \n\nAssistant:",
-            "max_tokens_to_sample": 800,
+            "max_tokens_to_sample": 1800,
             "temperature": 0.5
         })
         modelId = 'anthropic.claude-instant-v1'

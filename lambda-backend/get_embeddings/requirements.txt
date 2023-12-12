@@ -1,6 +1,5 @@
 langchain
-boto3
+boto3==1.29.6
 unstructured
-openai
 tiktoken
 faiss-cpu

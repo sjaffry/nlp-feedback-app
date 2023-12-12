@@ -1,4 +1,4 @@
-from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.embeddings import BedrockEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import FAISS
 import os
@@ -8,7 +8,6 @@ import json
 
 def lambda_handler(event, context):
 
-    api_key = os.environ['openai_api_key']
     bucket_name = os.environ['bucket_name']
     file_name = event['file_name']
     file_prefix = event['file_prefix']
@@ -35,8 +34,21 @@ def lambda_handler(event, context):
             splits = text_splitter.split_text(d)
             docs.extend(splits)
         
+        #Bedrock client
+        bedrock_runtime = boto3.client(
+            service_name="bedrock-runtime",
+            region_name="us-east-1"
+        )
+
+        embeddings = BedrockEmbeddings(
+        model_id="amazon.titan-embed-text-v1",
+        client=bedrock_runtime,
+        region_name="us-east-1",
+        )
+        
+        
         # Here we create a vector store from the documents and save it to disk.
-        docsearch = FAISS.from_texts(docs, OpenAIEmbeddings(openai_api_key=api_key))
+        docsearch = FAISS.from_texts(docs, embeddings)
         docsearch.save_local("/tmp/faiss_index")
         
         index_filename_full = f'{file_prefix}/faiss_index/index.faiss'

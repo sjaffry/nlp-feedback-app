@@ -32,9 +32,9 @@ def combine_files_in_s3_bucket(bucket_name, output_file_key, input_file_prefix):
 
     # Get a list of all objects in the bucket
     objects = s3.list_objects_v2(Bucket=bucket_name, Prefix=input_file_prefix, Delimiter='/')
-    files = objects.get('Contents', [])
-    print(files)
-    if files:
+    json_file_exists = any(obj['Key'].endswith('.json') for obj in objects.get('Contents', []))
+
+    if json_file_exists:
         # Create an in-memory file to hold the combined contents
         combined_file = io.StringIO()
     
@@ -58,26 +58,27 @@ def combine_files_in_s3_bucket(bucket_name, output_file_key, input_file_prefix):
         # Close the in-memory file
         combined_file.close()
     else: 
-        raise NoDataException('No files found to combine!')
+        raise NoDataException
 
 def lambda_handler(event, context):
     formatted_date = datetime.now().strftime("%Y%m%d")
-    bucket_name = event['bucket_name']
+    bucket_name = os.environ['bucket_name']
+    input_file_prefix = event['input_file_prefix']
     output_file_prefix = f"{event['output_file_key']}{formatted_date}"
     output_file_key = f"{output_file_prefix}/combinedreviews.txt"
     # Call the function to combine files in the bucket
     try:
-        combine_files_in_s3_bucket(bucket_name, output_file_key, event['input_file_prefix'])
+        combine_files_in_s3_bucket(bucket_name, output_file_key, input_file_prefix)
         output = {
             'file_name': output_file_key,
             'file_prefix': output_file_prefix,
             'bucket_name': bucket_name
             }
     except NoDataException:
+        # Sending a None in file_name get's handled in the embeddings lambda as nothing to do
         output = {
             'file_name': 'None',
-            'file_prefix': 'None',
-            'bucket_name': bucket_name
+            'file_prefix': 'None'
             }
 
     return output

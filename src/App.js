@@ -115,16 +115,6 @@ const App = () => {
           <i className="fas fa-microphone fa-5x"></i>
         </button>
         <p></p>
-        OR
-        <p></p>
-        <Form>
-          <TextArea 
-            rows="6" 
-            cols="40" 
-            placeholder='Write your feedback..'
-            onChange={(e) => setTextInput(e.target.value)} />
-        </Form>
-        <p></p>
         <Button icon labelPosition='left' onClick={handleSubmit}>
           <Icon name='upload' />
           Submit
