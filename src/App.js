@@ -57,6 +57,13 @@ const App = () => {
       }).catch((e) => console.log(e));
   };
   
+  const generateRandomNumber = () => {
+    const min = 10000000;
+    const max = 99999999;
+    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    return randomNumber;
+  }
+  
   const handleSubmit = () => {
     // Form validation
     if (!textInput.trim() && !isUploadable) {
@@ -65,10 +72,10 @@ const App = () => {
     }
     const queryParams = new URLSearchParams(window.location.search);
     const business_name = queryParams.get("business_name");
-    const email = queryParams.get("email");
+    const file_name = generateRandomNumber();
     const fileType = file.type;
     const url = "https://mvqwikiek9.execute-api.us-east-1.amazonaws.com/prod?"
-    const signUrl = url.concat("business_name="+business_name+"&email="+email+"&upload_type=audio");
+    const signUrl = url.concat("business_name="+business_name+"&file_name="+file_name+"&upload_type=audio");
     axios.get(signUrl)
     .then(response => {
       var signedRequest = response.data.uploadURL;
