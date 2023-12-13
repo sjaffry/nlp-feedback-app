@@ -49,12 +49,12 @@ const App = () => {
     Mp3Recorder
       .stop()
       .getMp3()
-      .release()
       .then(([buffer, blob]) => {
         let d = new Date();
         setFile(new File([blob],d.valueOf().toString(),{ type:"application/octet-stream" }));
         setIsRecording(false);
         setIsUploadable(true);
+        Mp3Recorder.release();
       }).catch((e) => console.log(e));
   };
   
@@ -67,7 +67,7 @@ const App = () => {
   
   const handleSubmit = () => {
     // Form validation
-    if (!textInput.trim() && !isUploadable) {
+    if (!isUploadable) {
       alert('Please record or enter feedback first!');
       return;
     }
