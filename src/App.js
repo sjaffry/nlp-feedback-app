@@ -23,7 +23,7 @@ const App = () => {
     if (isRecording) {
       setIsRecording(false);
       setIsFinished(true);
-      // Start processing the recording
+      // Stop recording and start processing
       stop();
       }
     else {
@@ -49,6 +49,7 @@ const App = () => {
     Mp3Recorder
       .stop()
       .getMp3()
+      .release()
       .then(([buffer, blob]) => {
         let d = new Date();
         setFile(new File([blob],d.valueOf().toString(),{ type:"application/octet-stream" }));
