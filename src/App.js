@@ -54,8 +54,9 @@ const App = () => {
         setFile(new File([blob],d.valueOf().toString(),{ type:"application/octet-stream" }));
         setIsRecording(false);
         setIsUploadable(true);
-        Mp3Recorder.release();
       }).catch((e) => console.log(e));
+    Mp3Recorder.release();
+    Mp3Recorder = null;
   };
   
   const generateRandomNumber = () => {
