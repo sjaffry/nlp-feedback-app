@@ -8,14 +8,14 @@ const URL_EXPIRATION_SECONDS = 300
 // Main Lambda entry point
 exports.handler = async (event) => {
   const business_name = event["queryStringParameters"]["business_name"]
-  const upload_type = event["queryStringParameters"]["upload_type"]
+  const upload_dir = event["queryStringParameters"]["upload_dir"]
   const file_name = event["queryStringParameters"]["file_name"]
-  return await getUploadURL(business_name, upload_type, file_name)
+  return await getUploadURL(business_name, upload_dir, file_name)
 }
 
-const getUploadURL = async function(business_name, upload_type, file_name) {
+const getUploadURL = async function(business_name, upload_dir, file_name) {
   const randomID = parseInt(Math.random() * 10000000)
-  const Key = `${upload_type}/${business_name}/${file_name}`
+  const Key = `${upload_dir}/${business_name}/${file_name}`
 
   // Get signed URL from S3
   const s3Params = {

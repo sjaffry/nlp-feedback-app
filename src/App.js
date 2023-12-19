@@ -58,8 +58,6 @@ const App = () => {
         setIsRecording(false);
         setIsUploadable(true);
       }).catch((e) => console.log(e));
-    Mp3Recorder.release();
-    Mp3Recorder = null;
   };
   
   const generateRandomNumber = () => {
@@ -77,8 +75,8 @@ const App = () => {
     }
     const file_name = generateRandomNumber();
     const fileType = file.type;
-    const url = "https://mvqwikiek9.execute-api.us-east-1.amazonaws.com/prod?"
-    const signUrl = url.concat("business_name="+business_name+"&file_name="+file_name+"&upload_type=audio");
+    const url = "https://uu5dql8v6h.execute-api.us-east-1.amazonaws.com/prod?"
+    const signUrl = url.concat("business_name="+business_name+"&file_name="+file_name+"&upload_dir=audio");
     axios.get(signUrl)
     .then(response => {
       var signedRequest = response.data.uploadURL;
