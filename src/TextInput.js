@@ -33,7 +33,7 @@ const TextInput = () => {
     const business_name = queryParams.get("business_name");
     const file_name = `${generateRandomNumber()}.json`;
     const fileType = "binary/octet-stream";
-    const url = "https://uu5dql8v6h.execute-api.us-east-1.amazonaws.com/prod?"
+    const url = "https://mvqwikiek9.execute-api.us-east-1.amazonaws.com/prod?"
     const signUrl = url.concat("business_name="+business_name+"&file_name="+file_name+"&upload_dir=transcribe-output");
     axios.get(signUrl)
     .then(response => {
