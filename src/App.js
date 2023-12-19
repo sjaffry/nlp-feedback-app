@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import axios from "axios";
+import { Link } from 'react-router-dom';
 import MicRecorder from 'mic-recorder-to-mp3';
 import { Button, Icon } from 'semantic-ui-react';
 import '@fortawesome/fontawesome-free/css/all.css';
@@ -16,8 +17,10 @@ const App = () => {
   const [isUploadable, setIsUploadable] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
-  const [textInput, setTextInput] = useState('');
   const [file, setFile] = useState('');
+  const queryParams = new URLSearchParams(window.location.search);
+  const business_name = queryParams.get("business_name");
+  const textInputPage = `/TextInput/?business_name=${business_name}`;
 
   const handleMicClick = () => {
     if (isRecording) {
@@ -72,8 +75,6 @@ const App = () => {
       alert('Please record or enter feedback first!');
       return;
     }
-    const queryParams = new URLSearchParams(window.location.search);
-    const business_name = queryParams.get("business_name");
     const file_name = generateRandomNumber();
     const fileType = file.type;
     const url = "https://mvqwikiek9.execute-api.us-east-1.amazonaws.com/prod?"
@@ -128,6 +129,10 @@ const App = () => {
           Submit
         </Button>
         {showSpinner && <RotatingSquare color="#d5d4d4" />}
+        <p></p>
+        <Link to={textInputPage} style={{ color: 'white', textDecoration: 'none' }}>
+          Switch to text input
+       </Link>
       </header>
     </div>
   );
