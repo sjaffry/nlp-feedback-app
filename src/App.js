@@ -70,7 +70,7 @@ const App = () => {
   const handleSubmit = () => {
     // Form validation
     if (!isUploadable) {
-      alert('Please record or enter feedback first!');
+      alert('Please finish recording feedback first!');
       return;
     }
     const file_name = generateRandomNumber();
