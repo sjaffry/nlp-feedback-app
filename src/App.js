@@ -7,6 +7,7 @@ import { Button, Icon } from 'semantic-ui-react';
 import '@fortawesome/fontawesome-free/css/all.css';
 import '@fortawesome/fontawesome-free/js/all.js';
 import { RotatingSquare } from  'react-loader-spinner'
+import { useNavigate } from "react-router-dom";
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
@@ -21,6 +22,7 @@ const App = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const business_name = queryParams.get("business_name");
   const textInputPage = `/TextInput/?business_name=${business_name}`;
+  const navigate = useNavigate();
 
   const handleMicClick = () => {
     if (isRecording) {
@@ -38,7 +40,7 @@ const App = () => {
   
   const start = () => {
     if (isBlocked) {
-      console.log('Permission Denied');
+      console.log('Microphone Permission Denied');
     } else {
       Mp3Recorder
         .start()
@@ -101,17 +103,21 @@ const App = () => {
     })
   };
 
+  const goToTextInput = () => {
+      navigate(textInputPage);
+  }
+
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ audio: true },
-      () => {
-        console.log('Permission Granted');
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(() => {
+        console.log('Microphone Permission Granted');
         setIsBlocked(false);
-      },
-      () => {
-        console.log('Permission Denied');
+      })
+      .catch((error) => {
+        console.error('Error accessing microphone:', error);
         setIsBlocked(true);
-      },
-    );
+        goToTextInput();
+      });
   }, []);
 
   return (
