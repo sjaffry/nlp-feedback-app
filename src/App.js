@@ -20,8 +20,9 @@ const App = () => {
   const [showSpinner, setShowSpinner] = useState(false);
   const [file, setFile] = useState('');
   const queryParams = new URLSearchParams(window.location.search);
-  const business_name = queryParams.get("business_name");
-  const textInputPage = `/TextInput/?business_name=${business_name}`;
+  const businessName = queryParams.get("business_name");
+  const eventName = queryParams.get("event_name");
+  const textInputPage = (!eventName) ? `/TextInput/?business_name=${businessName}` : `/TextInput/?business_name=${businessName}&event_name=${eventName}`;
   const navigate = useNavigate();
 
   const handleMicClick = () => {
@@ -75,10 +76,10 @@ const App = () => {
       alert('Please finish recording feedback first!');
       return;
     }
-    const file_name = generateRandomNumber();
+    const fileName = generateRandomNumber();
     const fileType = file.type;
     const url = "https://mvqwikiek9.execute-api.us-east-1.amazonaws.com/prod?"
-    const signUrl = url.concat("business_name="+business_name+"&file_name="+file_name+"&upload_dir=audio");
+    const signUrl = (!eventName) ? url.concat("business_name="+businessName+"&file_name="+fileName+"&upload_dir=audio") : url.concat("business_name="+businessName+"&event_name="+eventName+"&file_name="+fileName+"&upload_dir=audio");    
     axios.get(signUrl)
     .then(response => {
       var signedRequest = response.data.uploadURL;
