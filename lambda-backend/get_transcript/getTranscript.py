@@ -4,25 +4,25 @@ import time
 import os
 import uuid
 
-def get_business_name(event):
-    audio_filename = event['detail']['object']['key']
-    stopKey = audio_filename.replace('/', '|', 1).find('/')
-    startKey = audio_filename.find('/')
-    return audio_filename[startKey+1: stopKey]
-
 def lambda_handler(event, context):
 
     transcribe = boto3.client(service_name='transcribe', region_name='us-east-1')
     audio_filename = event['detail']['object']['key']
     bucket = event['detail']['bucket']['name']
-    business_name = get_business_name(event)
+    parts = audio_filename.split('/')
+    business_name = parts[1]
     
     # storing filename in Unix time will allow us to retrieve objects after a certain point for later file merging
     transcript_filename = int(time.time())
     transcribe_output_prefix = 'transcribe-output/{}/{}.json'.format(business_name, transcript_filename)
+    
+    # If there are 4 parts to the key then we have an event name also
+    if len(parts) == 4:
+        event_name = parts[2]
+        transcribe_output_prefix = 'transcribe-output/{}/{}/{}.json'.format(business_name, event_name, transcript_filename)
+    
     audiofile_loc = 's3://{}/{}'.format(bucket, audio_filename)
 
-    print(business_name)
     print('Calling StartTranscribe')
     job_name = str(uuid.uuid1())
     
