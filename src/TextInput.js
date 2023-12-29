@@ -35,7 +35,7 @@ const TextInput = () => {
     const eventName = queryParams.get("event_name");
     const fileType = "binary/octet-stream";
     const url = "https://mvqwikiek9.execute-api.us-east-1.amazonaws.com/prod?"
-    const signUrl = (!eventName) ? url.concat("business_name="+businessName+"&file_name="+fileName+"&upload_dir=audio") : url.concat("business_name="+businessName+"&event_name="+eventName+"&file_name="+fileName+"&upload_dir=audio");
+    const signUrl = (!eventName) ? url.concat("business_name="+businessName+"&file_name="+fileName+"&upload_dir=transcribe-output") : url.concat("business_name="+businessName+"&event_name="+eventName+"&file_name="+fileName+"&upload_dir=transcribe-output");
     axios.get(signUrl)
     .then(response => {
       var signedRequest = response.data.uploadURL;
