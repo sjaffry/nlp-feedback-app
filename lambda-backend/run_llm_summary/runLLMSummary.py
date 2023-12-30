@@ -26,13 +26,20 @@ def lambda_handler(event, context):
 
     bucket_name = os.environ['bucket_name']
     date_range = event["queryStringParameters"]['date_range']
+    event_name = event["queryStringParameters"]['event_name']
     
     # Let's extract the business name from the token by looking at the group memebership of the user
     token = event['headers']['Authorization']
     decoded = decode_jwt(token)
     # We only ever expect the user to be in one group only - business rule
     business_name = decoded['cognito:groups'][0]
-    folder_loc=f"transcribe-output/{business_name}/{date_range}"
+    folder_loc = (
+    "transcribe-output/"
+    + f"{business_name}/"
+    + (f"{event_name}/" if event_name else "")
+    + f"{date_range}"
+    )
+    
     reviews_file = f"{folder_loc}/combinedreviews.txt"
 
     try:
@@ -45,10 +52,10 @@ def lambda_handler(event, context):
         bedrock = boto3.client('bedrock-runtime')
         body = json.dumps({
             "prompt": f"\n\nHuman: create a summary of the following and also provide top 5 recommendations based on it. Label the summary with \"Summary\" and recommendations with \"Top 5 recommendations\":\n{file_data} \n\nAssistant:",
-            "max_tokens_to_sample": 1800,
+            "max_tokens_to_sample": 800,
             "temperature": 0.5
         })
-        modelId = 'anthropic.claude-instant-v1'
+        modelId = 'anthropic.claude-v2'
         accept = 'application/json'
         contentType = 'application/json'
 
