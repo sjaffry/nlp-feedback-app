@@ -18,20 +18,18 @@ def archive_file(bucket_name, file_key, input_file_prefix):
 
     new_key = f'{input_file_prefix}archive/{file_name}'
 
-    # Copy the object
-    s3.meta.client.copy(copy_source, bucket_name, new_key)
-
-    # Delete the original object
-    s3.Object(bucket_name, file_key).delete()
+    # Copy the object to archive folder if it's not already in there and then delete
+    if file_key != new_key:
+        s3.meta.client.copy(copy_source, bucket_name, new_key)
+        s3.Object(bucket_name, file_key).delete()
     
     
-
 def combine_files_in_s3_bucket(bucket_name, output_file_key, input_file_prefix):
     # Create a new S3 client
     s3 = boto3.client('s3')
 
     # Get a list of all objects in the bucket
-    objects = s3.list_objects_v2(Bucket=bucket_name, Prefix=input_file_prefix, Delimiter='/')
+    objects = s3.list_objects_v2(Bucket=bucket_name, Prefix=input_file_prefix)
     json_file_exists = any(obj['Key'].endswith('.json') for obj in objects.get('Contents', []))
 
     if json_file_exists:
@@ -62,7 +60,7 @@ def combine_files_in_s3_bucket(bucket_name, output_file_key, input_file_prefix):
         raise NoDataException
 
 def lambda_handler(event, context):
-    formatted_date = datetime.now().strftime("%Y%m%d")
+    formatted_date = datetime.now().strftime("%Y%m")
     bucket_name = os.environ['bucket_name']
     input_file_prefix = event['input_file_prefix']
     output_file_prefix = f"{event['output_file_key']}{formatted_date}"
