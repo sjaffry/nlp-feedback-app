@@ -63,7 +63,7 @@ def lambda_handler(event, context):
     formatted_date = datetime.now().strftime("%Y%m")
     bucket_name = os.environ['bucket_name']
     input_file_prefix = event['input_file_prefix']
-    output_file_prefix = f"{event['output_file_key']}{formatted_date}"
+    output_file_prefix = f"{event['input_file_prefix']}{formatted_date}"
     output_file_key = f"{output_file_prefix}/combinedreviews.txt"
     # Call the function to combine files in the bucket
     try:

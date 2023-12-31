@@ -16,7 +16,7 @@ exports.handler = async (event) => {
 
 const getUploadURL = async function(business_name, event_name, upload_dir, file_name) {
   const randomID = parseInt(Math.random() * 10000000)
-  const Key = (!event_name) ? `${upload_dir}/${business_name}/${file_name}` : `${upload_dir}/${business_name}/${event_name}/${file_name}`
+  const Key = (!event_name) ? `${upload_dir}/${business_name}/${file_name}` : `${upload_dir}/${business_name}/events/${event_name}/${file_name}`
 
 
   // Get signed URL from S3

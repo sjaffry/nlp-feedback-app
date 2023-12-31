@@ -17,9 +17,9 @@ def lambda_handler(event, context):
     transcribe_output_prefix = 'transcribe-output/{}/{}.json'.format(business_name, transcript_filename)
     
     # If there are 4 parts to the key then we have an event name also
-    if len(parts) == 4:
-        event_name = parts[2]
-        transcribe_output_prefix = 'transcribe-output/{}/{}/{}.json'.format(business_name, event_name, transcript_filename)
+    if len(parts) == 5:
+        event_name = parts[3]
+        transcribe_output_prefix = 'transcribe-output/{}/events/{}/{}.json'.format(business_name, event_name, transcript_filename)
     
     audiofile_loc = 's3://{}/{}'.format(bucket, audio_filename)
 
