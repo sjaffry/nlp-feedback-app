@@ -36,7 +36,7 @@ def lambda_handler(event, context):
     folder_loc = (
     "transcribe-output/"
     + f"{business_name}/"
-    + (f"{event_name}/" if event_name else "")
+     + (f"events/{event_name}/" if event_name else "")
     + f"{date_range}"
     )
     

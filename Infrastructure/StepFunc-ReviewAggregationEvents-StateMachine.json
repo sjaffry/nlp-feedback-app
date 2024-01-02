@@ -1,0 +1,51 @@
+{
+    "StartAt": "Generate aggregation job input",
+    "TimeoutSeconds": 3600,
+    "States": {
+      "Generate aggregation job input": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::lambda:invoke",
+        "OutputPath": "$.Payload",
+        "Parameters": {
+          "Payload.$": "$",
+          "FunctionName": "arn:aws:lambda:us-east-1:946827581022:function:list_event_folders:$LATEST"
+        },
+        "Next": "Fan out aggregation jobs"
+      },
+      "Fan out aggregation jobs": {
+        "Type": "Map",
+        "InputPath": "$.detail",
+        "ItemProcessor": {
+          "ProcessorConfig": {
+            "Mode": "INLINE"
+          },
+          "StartAt": "Aggregate",
+          "States": {
+            "Aggregate": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "OutputPath": "$.Payload",
+              "Parameters": {
+                "Payload.$": "$",
+                "FunctionName": "arn:aws:lambda:us-east-1:946827581022:function:combine_event_reviews:$LATEST"
+              },
+              "Next": "VectorIndex"
+            },
+            "VectorIndex": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "OutputPath": "$.Payload",
+              "Parameters": {
+                "Payload.$": "$",
+                "FunctionName": "arn:aws:lambda:us-east-1:946827581022:function:getEmbeddings:$LATEST"
+              },
+              "End": true
+            }
+          }
+        },
+        "End": true,
+        "ResultPath": "$.detail.subfolders",
+        "ItemsPath": "$.subfolders"
+      }
+    }
+  }
