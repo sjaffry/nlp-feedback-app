@@ -47,7 +47,7 @@ def combine_files_in_s3_bucket(bucket_name, output_file_key, input_file_prefix):
                 json_data = json.loads(contents)
                 transcript_text = json_data["results"]["transcripts"][0]["transcript"]
                 if transcript_text is not None:
-                    transcript_text = transcript_text+'. ' #Adding a period in case original review didn't
+                    transcript_text += '\n'
                     combined_file.write(transcript_text)
                     archive_file(bucket_name, file_key, input_file_prefix)
     
@@ -66,7 +66,7 @@ def lambda_handler(event, context):
     bucket_name = os.environ['bucket_name']
     input_file_prefix = event['input_file_prefix']
     output_file_prefix = f"{event['output_file_key']}{formatted_date}"
-    output_file_key = f"{output_file_prefix}/combinedreviews.txt"
+    output_file_key = f"{output_file_prefix}/combinedreviews.csv"
     # Call the function to combine files in the bucket
     try:
         combine_files_in_s3_bucket(bucket_name, output_file_key, input_file_prefix)
