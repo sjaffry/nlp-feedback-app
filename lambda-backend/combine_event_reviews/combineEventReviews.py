@@ -64,7 +64,7 @@ def lambda_handler(event, context):
     bucket_name = os.environ['bucket_name']
     input_file_prefix = event['input_file_prefix']
     output_file_prefix = f"{event['input_file_prefix']}{formatted_date}"
-    output_file_key = f"{output_file_prefix}/combinedreviews.csv"
+    output_file_key = f"{output_file_prefix}/combinedreviews.txt"
     # Call the function to combine files in the bucket
     try:
         combine_files_in_s3_bucket(bucket_name, output_file_key, input_file_prefix)
