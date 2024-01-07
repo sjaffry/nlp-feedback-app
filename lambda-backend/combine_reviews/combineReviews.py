@@ -47,6 +47,7 @@ def combine_files_in_s3_bucket(bucket_name, output_file_key, input_file_prefix):
                 json_data = json.loads(contents)
                 transcript_text = json_data["results"]["transcripts"][0]["transcript"]
                 if transcript_text is not None:
+                    transcript_text = transcript_text.replace(',', '')
                     transcript_text += '\n'
                     combined_file.write(transcript_text)
                     archive_file(bucket_name, file_key, input_file_prefix)
