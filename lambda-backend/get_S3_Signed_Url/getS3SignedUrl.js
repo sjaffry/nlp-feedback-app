@@ -17,7 +17,7 @@ function extractQueryStringParams(qs) {
 
   // TODO - Retrieve this list from DynamoDB later
   const businessNameList = ["FTSC"];
-  const eventNameList = ["warmpoolday"];
+  const eventNameList = ["warmpoolday","halloween","diwali"];
   const splitStrings = qs.split("/");
 
   let businessName;
