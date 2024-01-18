@@ -20,9 +20,8 @@ const App = () => {
   const [showSpinner, setShowSpinner] = useState(false);
   const [file, setFile] = useState('');
   const queryParams = new URLSearchParams(window.location.search);
-  const businessName = queryParams.get("business_name");
-  const eventName = queryParams.get("event_name");
-  const textInputPage = (!eventName) ? `/TextInput/?business_name=${businessName}` : `/TextInput/?business_name=${businessName}&event_name=${eventName}`;
+  const queryString = queryParams.get("qs"); 
+  const textInputPage = `/TextInput/?qs=${queryString}`;
   const navigate = useNavigate();
 
   const handleMicClick = () => {
@@ -79,7 +78,7 @@ const App = () => {
     const fileName = generateRandomNumber();
     const fileType = file.type;
     const url = "https://mvqwikiek9.execute-api.us-east-1.amazonaws.com/prod?"
-    const signUrl = (!eventName) ? url.concat("business_name="+businessName+"&file_name="+fileName+"&upload_dir=audio") : url.concat("business_name="+businessName+"&event_name="+eventName+"&file_name="+fileName+"&upload_dir=audio");    
+    const signUrl = url.concat("qs="+queryString+"&file_name="+fileName+"&upload_dir=audio");    
     axios.get(signUrl)
     .then(response => {
       var signedRequest = response.data.uploadURL;
