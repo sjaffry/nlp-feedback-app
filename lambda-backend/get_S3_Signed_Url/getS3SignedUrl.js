@@ -25,7 +25,7 @@ function extractQueryStringParams(qs) {
 
   // Check business name
   for (let bn of businessNameList) {
-      if (hashSha256(bn) === splitStrings[0]) {
+      if (hashSha256(bn) === splitStrings[0].toLowerCase()) {
           businessName = bn;
           break;
       }
@@ -37,14 +37,10 @@ function extractQueryStringParams(qs) {
 
   // Check event name
   for (let en of eventNameList) {
-      if (hashSha256(en) === splitStrings[1]) {
+      if (hashSha256(en) === splitStrings[1].toLowerCase()) {
           eventName = en;
           break;
       }
-  }
-
-  if (!eventName) {
-      throw new Error("event name not found");
   }
 
   const result = {
