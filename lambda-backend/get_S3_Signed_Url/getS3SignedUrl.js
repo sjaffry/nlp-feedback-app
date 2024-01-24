@@ -22,10 +22,21 @@ function extractQueryStringParams(qs) {
 
   let businessName;
   let eventName;
+  let inputBusinessName;
+  let inputEventName;
+
+
+  if (splitStrings[0]) {
+    inputBusinessName = splitStrings[0].toLowerCase();
+  }
+
+  if (splitStrings[1]) {
+    inputEventName = splitStrings[1].toLowerCase();
+  }
 
   // Check business name
   for (let bn of businessNameList) {
-      if (hashSha256(bn) === splitStrings[0].toLowerCase()) {
+      if (hashSha256(bn) === inputBusinessName) {
           businessName = bn;
           break;
       }
@@ -36,8 +47,9 @@ function extractQueryStringParams(qs) {
   }
 
   // Check event name
+
   for (let en of eventNameList) {
-      if (hashSha256(en) === splitStrings[1].toLowerCase()) {
+      if (hashSha256(en) === inputEventName) {
           eventName = en;
           break;
       }
