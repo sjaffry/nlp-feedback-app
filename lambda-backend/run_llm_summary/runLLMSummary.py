@@ -41,12 +41,19 @@ def lambda_handler(event, context):
     )
     
     reviews_file = f"{folder_loc}/combinedreviews.txt"
+    reviews_count_file = f"{folder_loc}/reviewcount.txt"
 
     try:
         # Fetch the file from S3
         s3 = boto3.client('s3')
+        
+        # Let's read the reviews file
         response = s3.get_object(Bucket=bucket_name, Key=reviews_file)
         file_data = response['Body'].read()
+        
+        # Let's read the review count file
+        count_response = s3.get_object(Bucket=bucket_name, Key=reviews_count_file)
+        count = count_response['Body'].read().decode('utf-8')
         
         # Call Bedrock for LLM summary
         bedrock = boto3.client('bedrock-runtime')
@@ -62,6 +69,10 @@ def lambda_handler(event, context):
         response = bedrock.invoke_model(body=body, modelId=modelId, accept=accept, contentType=contentType)
 
         response_body = json.loads(response.get('body').read())
+        output = {
+            "llm_text": response_body.get('completion'),
+            "review_count": count
+        }
     
         return {
                 'statusCode': 200,
@@ -70,7 +81,7 @@ def lambda_handler(event, context):
                     "Access-Control-Allow-Origin": "https://query.shoutavouch.com",
                     "Access-Control-Allow-Methods": "OPTIONS,PUT,POST,GET"
             },    
-                'body': response_body.get('completion')
+                'body': json.dumps(output)
             }    
     except Exception as e:
         print(e)
