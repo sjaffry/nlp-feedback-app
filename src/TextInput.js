@@ -5,6 +5,7 @@ import { Button, TextArea, Form } from 'semantic-ui-react';
 import '@fortawesome/fontawesome-free/css/all.css';
 import '@fortawesome/fontawesome-free/js/all.js';
 import { RotatingSquare } from  'react-loader-spinner'
+import foothillslogo from './images/foothillslogowhite.svg';
 
 
 const TextInput = () => {
@@ -66,6 +67,9 @@ const TextInput = () => {
   return (
     <div className="App">
       <header className="App-header">
+        <div className="top-section">
+          <img src={foothillslogo} alt="Organization logo" />
+        </div>
         <Form>
           <TextArea 
             placeholder='Your feedback..' 
