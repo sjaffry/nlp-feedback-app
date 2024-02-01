@@ -79,7 +79,7 @@ def lambda_handler(event, context):
                 'statusCode': 200,
                 'headers': {
                     "Access-Control-Allow-Headers" : "Content-Type",
-                    "Access-Control-Allow-Origin": "https://query.shoutavouch.com",
+                    "Access-Control-Allow-Origin": "https://query.onreaction.com",
                     "Access-Control-Allow-Methods": "OPTIONS,PUT,POST,GET"
             },    
                 'body': response_body.get('completion')

@@ -81,7 +81,7 @@ const getUploadURL = async function(business_name, event_name, upload_dir, file_
 
   // Get signed URL from S3
   const s3Params = {
-    Bucket: process.env.UploadBucket,
+    Bucket: process.env.bucket_name,
     Key,
     Expires: URL_EXPIRATION_SECONDS,
     ContentType: 'application/octet-stream'
@@ -92,7 +92,7 @@ const getUploadURL = async function(business_name, event_name, upload_dir, file_
       "statusCode": 200,
       "headers": {
             "Access-Control-Allow-Headers" : "Content-Type",
-            "Access-Control-Allow-Origin": "https://www.shoutavouch.com",
+            "Access-Control-Allow-Origin": "https://www.onreaction.com",
             "Access-Control-Allow-Methods": "OPTIONS,PUT,POST,GET"
         },
       "body": JSON.stringify({
