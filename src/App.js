@@ -8,6 +8,7 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import '@fortawesome/fontawesome-free/js/all.js';
 import { RotatingSquare } from  'react-loader-spinner'
 import { useNavigate } from "react-router-dom";
+import foothillslogo from './images/foothillslogowhite.svg';
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
@@ -123,6 +124,9 @@ const App = () => {
   return (
     <div className="App">
       <header className="App-header">
+        <div className="top-section">
+          <img src={foothillslogo} alt="Organization logo" />
+        </div>
         <button 
           className={`mic-button ${isRecording ? 'recording' : (isFinished ? 'finished' : '')}`} 
           onClick={handleMicClick}>

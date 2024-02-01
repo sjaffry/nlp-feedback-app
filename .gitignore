@@ -9,6 +9,7 @@
 /coverage
 App-Prod.js
 App-Test.js
+/lambda-backend/Scratch/
 
 # production
 /build

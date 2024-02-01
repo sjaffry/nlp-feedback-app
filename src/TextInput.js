@@ -6,11 +6,16 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import '@fortawesome/fontawesome-free/js/all.js';
 import { RotatingSquare } from  'react-loader-spinner'
 import foothillslogo from './images/foothillslogowhite.svg';
+import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 
 const TextInput = () => {
   const [showSpinner, setShowSpinner] = useState(false);
   const [textInput, setTextInput] = useState('');
+  const queryParams = new URLSearchParams(window.location.search);
+  const queryString = queryParams.get("qs"); 
+  const voiceInputPage = `/?qs=${queryString}`;
   
   const generateRandomNumber = () => {
     const min = 10000000;
@@ -82,6 +87,10 @@ const TextInput = () => {
           Submit
         </Button>
         {showSpinner && <RotatingSquare color="#d5d4d4" />}
+        <p></p>
+        <Link to={voiceInputPage} style={{ color: 'white', textDecoration: 'none' }}>
+          Switch to voice feedback
+       </Link>
       </header>
     </div>
   );
