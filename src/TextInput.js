@@ -30,7 +30,7 @@ const TextInput = () => {
       alert('Please enter feedback first!');
       return;
     }
-
+    setShowSpinner(true);
     // Create a JSON file from the text input in the same format as the audio transcription job for code reusability downstream
     const jsonObject = { "results": { "transcripts": [ { "transcript": textInput } ] } };
     const jsonBlob = new Blob([JSON.stringify(jsonObject)], { type: 'application/json' });
@@ -40,7 +40,7 @@ const TextInput = () => {
     const fileName = `${generateRandomNumber()}.json`;
     const queryString = queryParams.get("qs");
     const fileType = "binary/octet-stream";
-    const url = "https://mvqwikiek9.execute-api.us-east-1.amazonaws.com/prod?"
+    const url = "https://mag7w370mh.execute-api.us-east-1.amazonaws.com/prod?"
     const signUrl = url.concat("qs="+queryString+"&file_name="+fileName+"&upload_dir=transcribe-output");    
     axios.get(signUrl)
     .then(response => {
@@ -50,7 +50,6 @@ const TextInput = () => {
           'Content-Type': fileType,
         }
       };
-      setShowSpinner(true);
       axios.put(signedRequest,jsonFile,options)
       .then(
         result => { 
