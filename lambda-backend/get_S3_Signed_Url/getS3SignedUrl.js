@@ -92,7 +92,7 @@ const getUploadURL = async function(business_name, event_name, upload_dir, file_
       "statusCode": 200,
       "headers": {
             "Access-Control-Allow-Headers" : "Content-Type",
-            "Access-Control-Allow-Origin": "https://www.onreaction.com",
+            "Access-Control-Allow-Origin": "https://feedback.onreaction.com",
             "Access-Control-Allow-Methods": "OPTIONS,PUT,POST,GET"
         },
       "body": JSON.stringify({

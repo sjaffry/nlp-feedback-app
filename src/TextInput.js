@@ -40,7 +40,7 @@ const TextInput = () => {
     const fileName = `${generateRandomNumber()}.json`;
     const queryString = queryParams.get("qs");
     const fileType = "binary/octet-stream";
-    const url = "https://mag7w370mh.execute-api.us-east-1.amazonaws.com/prod?"
+    const url = "https://mag7w370mh.execute-api.us-west-2.amazonaws.com/prod?"
     const signUrl = url.concat("qs="+queryString+"&file_name="+fileName+"&upload_dir=transcribe-output");    
     axios.get(signUrl)
     .then(response => {
