@@ -79,7 +79,7 @@ const App = () => {
     setShowSpinner(true);
     const fileName = generateRandomNumber();
     const fileType = file.type;
-    const url = "https://mvqwikiek9.execute-api.us-east-1.amazonaws.com/prod?"
+    const url = "https://mag7w370mh.execute-api.us-east-1.amazonaws.com/prod?"
     const signUrl = url.concat("qs="+queryString+"&file_name="+fileName+"&upload_dir=audio");    
     axios.get(signUrl)
     .then(response => {
