@@ -16,6 +16,7 @@ def list_s3_folders(bucket_name, prefix=''):
 def lambda_handler(event, context):
     bucket_name = os.environ['bucket_name']
     input_file_prefix = event['input_file_prefix']
+    business_name = event['business_name']
 
     try:
         # List folders within a specific prefix
@@ -25,7 +26,7 @@ def lambda_handler(event, context):
         subfolder_list = []
         
         for folder in subfolders:
-            subfolder_list.append({ "input_file_prefix": folder }) 
+              subfolder_list.append({ "input_file_prefix": folder, "business_name": business_name }) 
             
         output = {
                   "detail": {
