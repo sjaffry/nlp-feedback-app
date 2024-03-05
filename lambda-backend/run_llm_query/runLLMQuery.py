@@ -91,7 +91,7 @@ def lambda_handler(event, context):
     }
 
     llm = Bedrock(
-        model_id="anthropic.claude-v2", model_kwargs=model_kwargs, client=bedrock_runtime, region_name="us-east-1"
+        model_id="anthropic.claude-instant-v1", model_kwargs=model_kwargs, client=bedrock_runtime, region_name="us-east-1"
     )
     memory = ConversationSummaryMemory(
         llm=llm, memory_key="chat_history", return_messages=True

@@ -6,7 +6,7 @@ import uuid
 
 def lambda_handler(event, context):
 
-    transcribe = boto3.client(service_name='transcribe', region_name='us-east-1')
+    transcribe = boto3.client(service_name='transcribe', region_name='us-west-2')
     audio_filename = event['detail']['object']['key']
     bucket = event['detail']['bucket']['name']
     parts = audio_filename.split('/')

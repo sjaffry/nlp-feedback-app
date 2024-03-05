@@ -62,7 +62,7 @@ def lambda_handler(event, context):
             "max_tokens_to_sample": 800,
             "temperature": 0.5
         })
-        modelId = 'anthropic.claude-v2'
+        modelId = 'anthropic.claude-instant-v1'
         accept = 'application/json'
         contentType = 'application/json'
 
