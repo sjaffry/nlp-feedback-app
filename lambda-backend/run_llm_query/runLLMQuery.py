@@ -1,13 +1,8 @@
-from langchain.embeddings import BedrockEmbeddings
-from langchain.llms import Bedrock
-from langchain.chains import RetrievalQA
-from langchain.vectorstores import FAISS
-from langchain.chains import ConversationalRetrievalChain
-from langchain.memory import ConversationSummaryMemory
 import os
 import boto3
 import json
 import base64
+
 
 def decode_base64_url(data):
     """Add padding to the input and decode base64 url"""
@@ -28,23 +23,11 @@ def decode_jwt(token):
 
     return json.loads(payload)
     #return { 'business_name': payload['cognito:groups'][0] }
-    
-def trimmed_foldername(full_folderpath):
-    return os.path.basename(os.path.normpath(full_folderpath))
-
-def download_index_files(bucket_name, index_file, pkl_file, local_index_file, local_pkl_file):
-    s3 = boto3.client('s3')
-    try:
-        s3.download_file(bucket_name, index_file, local_index_file)
-        s3.download_file(bucket_name, pkl_file, local_pkl_file)
-        print("Files downloaded successfully.")
-    except Exception as e:
-        raise ValueError(e)
 
 def lambda_handler(event, context):
-
     bucket_name = os.environ['bucket_name']
-    date_range = event["queryStringParameters"]['date_range']
+    appId = os.environ['qbusiness_appId'] 
+
     query = event["queryStringParameters"]['query']
     prompt_prefix = "Respond in English only. "
     
@@ -53,63 +36,27 @@ def lambda_handler(event, context):
     decoded = decode_jwt(token)
     # We only ever expect the user to be in one group only - business rule
     business_name = decoded['cognito:groups'][0]
-
-    # Download faiss index files if not already exist
-    index_loc=f"transcribe-output/{business_name}/{date_range}/faiss_index"
-    index_file = f"{index_loc}/index.faiss"
-    pkl_file = f"{index_loc}/index.pkl"
-    local_path_prefix = f"/tmp/{date_range}"
-    local_path = f'{local_path_prefix}/faiss_index_{business_name}'
-    local_index_file = f"{local_path}/index.faiss"
-    local_pkl_file = f"{local_path}/index.pkl"
-
-    if not(os.path.isfile(local_index_file) and os.path.isfile(local_pkl_file)):
-            print("Files don't exist")
-            os.mkdir(local_path_prefix)
-            os.mkdir(local_path)
-            download_index_files(bucket_name, index_file, pkl_file, local_index_file, local_pkl_file)
-    else:
-        print("Files already exists no need to download")
-
-    #Bedrock client
-    bedrock_runtime = boto3.client(
-        service_name="bedrock-runtime",
-        region_name="us-east-1"
+    user_name = decoded['cognito:username']
+    
+    client = boto3.client('qbusiness')
+    
+    response = client.chat_sync(
+        applicationId=appId,
+        userId=user_name,
+        userMessage=query
     )
-
-    embeddings = BedrockEmbeddings(
-    model_id="amazon.titan-embed-text-v1",
-    client=bedrock_runtime,
-    region_name="us-east-1",
-    )
-
-    # Load faiss index
-    docsearch = FAISS.load_local(local_path, embeddings)
-    model_kwargs = {
-    'max_tokens_to_sample': 1000,
-    'temperature': 1.0
+    
+    result = {
+        "answer": response['systemMessage'],
+        "sources": [source['title'] for source in response['sourceAttributions']]
     }
-
-    llm = Bedrock(
-        model_id="anthropic.claude-instant-v1", model_kwargs=model_kwargs, client=bedrock_runtime, region_name="us-east-1"
-    )
-    memory = ConversationSummaryMemory(
-        llm=llm, memory_key="chat_history", return_messages=True
-    )
-
-    # Initialize the retrieval chain and run LLM query
-    try:
-        qa = ConversationalRetrievalChain.from_llm(llm, retriever=docsearch.as_retriever(), memory=memory)
-        result = qa.run(prompt_prefix+query)
-    except Exception as e:
-        raise ValueError(e)
-
+    
     return {
-            'statusCode': 200,
-            'headers': {
-                "Access-Control-Allow-Headers" : "Content-Type",
-                "Access-Control-Allow-Origin": "https://query.shoutavouch.com",
-                "Access-Control-Allow-Methods": "OPTIONS,PUT,POST,GET"
-        },    
-            'body': json.dumps(result)
-        }    
+        'statusCode': 200,
+        'headers': {
+            "Access-Control-Allow-Headers" : "Content-Type",
+            "Access-Control-Allow-Origin": "https://query.onreaction.com",
+            "Access-Control-Allow-Methods": "OPTIONS,PUT,POST,GET"
+    },   
+        'body': json.dumps(result)
+    }
