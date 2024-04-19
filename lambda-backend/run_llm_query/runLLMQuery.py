@@ -24,12 +24,14 @@ def decode_jwt(token):
     return json.loads(payload)
     #return { 'business_name': payload['cognito:groups'][0] }
 
+def trimFileName(filename):
+    return filename.split('/')[-1]
+
 def lambda_handler(event, context):
     bucket_name = os.environ['bucket_name']
     appId = os.environ['qbusiness_appId'] 
 
     query = event["queryStringParameters"]['query']
-    prompt_prefix = "Respond in English only. "
     
     # Let's extract the business name from the token by looking at the group memebership of the user
     token = event['headers']['Authorization']
@@ -38,17 +40,33 @@ def lambda_handler(event, context):
     business_name = decoded['cognito:groups'][0]
     user_name = decoded['cognito:username']
     
-    client = boto3.client('qbusiness')
+    client = boto3.client('bedrock-agent-runtime')
     
-    response = client.chat_sync(
-        applicationId=appId,
-        userId=user_name,
-        userMessage=query
+    response = client.retrieve_and_generate(
+        input={
+            'text': query
+        },
+        retrieveAndGenerateConfiguration={
+            'knowledgeBaseConfiguration': {
+                'knowledgeBaseId': '8A2SUAGCKK',
+                'modelArn': 'anthropic.claude-3-haiku-20240307-v1:0'
+            },
+            'type': 'KNOWLEDGE_BASE'
+        }
     )
     
+    citations = []
+    for i in response['citations']:
+        for j in i['retrievedReferences']:
+            citation = {
+                'text': j['content']['text'],
+                'source': trimFileName(j['location']['s3Location']['uri'])
+            }
+            citations.append(citation)
+
     result = {
-        "answer": response['systemMessage'],
-        "sources": [source['title'] for source in response['sourceAttributions']]
+        "answer": response['output']['text'],
+        "sources": [citation['source'] for citation in citations]
     }
     
     return {
