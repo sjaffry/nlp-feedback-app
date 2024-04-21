@@ -49,7 +49,7 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'headers': {
                 "Access-Control-Allow-Headers" : "Content-Type",
-                "Access-Control-Allow-Origin": "https://checkin.onreaction.com",
+                "Access-Control-Allow-Origin": "https://feedback.onreaction.com",
                 "Access-Control-Allow-Methods": "OPTIONS,PUT,POST,GET"
             },    
             'body': json.dumps(new_item)
@@ -61,7 +61,7 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'headers': {
                 "Access-Control-Allow-Headers" : "Content-Type",
-                "Access-Control-Allow-Origin": "https://checkin.onreaction.com",
+                "Access-Control-Allow-Origin": "https://feedback.onreaction.com",
                 "Access-Control-Allow-Methods": "OPTIONS,PUT,POST,GET"
             },
             'body': json.dumps('An error occurred: ' + str(e))

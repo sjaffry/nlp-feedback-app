@@ -107,7 +107,7 @@ const CourtCheckin = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <div className="top-section">
+        <div className="top-section" style={{ marginBottom: '30px' }}>
           <img src={foothillslogo} alt="Organization logo" />
         </div>
         <div style={{ marginBottom: '10px' }}>
@@ -116,7 +116,7 @@ const CourtCheckin = () => {
         <Form>
           <TextArea 
             rows="1" 
-            cols="20"
+            cols="30"
             onChange={(e) => setTextInput(e.target.value)} />
         </Form>
         <p></p>
@@ -143,8 +143,8 @@ const CourtCheckin = () => {
         <div style={{
           marginBottom: '10px',
           backgroundColor: 'blue',
-          padding: '10px',
-          borderRadius: '5px'
+          padding: '10px', 
+          borderRadius: '5px' 
         }}>
         Last Check-in: {unixTimeToDate(checkinTimestamp)}
         <p></p>
