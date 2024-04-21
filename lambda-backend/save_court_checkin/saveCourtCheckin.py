@@ -10,6 +10,10 @@ def lambda_handler(event, context):
     checkin_timestamp = event["queryStringParameters"]['checkin_timestamp']   
     player_name = event["queryStringParameters"]['player_name'] 
     business_name = event["queryStringParameters"]['business_name']
+    keep_warm = event["queryStringParameters"]['keep_warm']
+    
+    if keep_warm == "true":
+        return {'body': json.dumps('stay warm!')}
     
     try:
         # Check if both keys are provided

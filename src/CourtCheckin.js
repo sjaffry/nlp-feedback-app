@@ -96,7 +96,8 @@ const CourtCheckin = () => {
         business_name: businessName,
         court_number: courtNumber,
         checkin_timestamp: getUnixTime(),
-        player_name: textInput
+        player_name: textInput,
+        keep_warm: 'false'
       },
       headers: {
         'Content-Type': 'application/json'
