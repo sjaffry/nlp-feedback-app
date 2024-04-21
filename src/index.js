@@ -4,6 +4,7 @@ import 'semantic-ui-css/semantic.min.css'
 import './index.css';
 import App from './App';
 import TextInput from './TextInput';
+import CourtCheckin  from './CourtCheckin';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 document.title = 'Feedback app';
@@ -14,6 +15,7 @@ root.render(
     <Router>
       <Routes>
         <Route path="/TextInput" element={<TextInput />} />
+        <Route path="/CourtCheckin" element={<CourtCheckin />} />
         <Route path="/" element={<App />} />
       </Routes>
     </Router>
