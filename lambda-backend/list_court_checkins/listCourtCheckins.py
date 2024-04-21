@@ -29,6 +29,7 @@ def lambda_handler(event, context):
     decoded = decode_jwt(token)
     # We only ever expect the user to be in one group only - business rule
     business_name = decoded['cognito:groups'][0]
+    user_name = decoded['cognito:username']
     
     # Create a DynamoDB client
     dynamodb = boto3.resource('dynamodb')
@@ -52,14 +53,15 @@ def lambda_handler(event, context):
             )
             items.extend(response['Items'])
             
-        cleaned_items = [{k: v for k, v in item.items() if k != 'business_name'} for item in items]
+        items_no_businessname = [{k: v for k, v in item.items() if k != 'business_name'} for item in items]
+        items_no_randomkey = [{k: v for k, v in item.items() if k != 'random_key'} for item in items_no_businessname]
 
         # Dictionaries to hold the separated data
         pickleball_dict = []
         tennis_dict = []
         
         # Iterate over each item in the data
-        for i, item in enumerate(cleaned_items):
+        for i, item in enumerate(items_no_randomkey):
             if item["court_number"].startswith("Pickleball"):
                 pickleball_dict.append(item)
             else:
