@@ -107,9 +107,10 @@ const CourtCheckin = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <div className="top-section" style={{ marginBottom: '50px' }}>
+        <div className="top-section" style={{ marginBottom: '30px' }}>
           <img src={foothillslogo} alt="Organization logo" />
         </div>
+        <h1 style={{ marginBottom: '20px' }}>Court {courtNumber} Check-in</h1>
         <div style={{ marginBottom: '10px' }}>
           Member full name
         </div>
