@@ -9,11 +9,12 @@ def lambda_handler(event, context):
     court_number = event["queryStringParameters"]['court_number']
     checkin_timestamp = event["queryStringParameters"]['checkin_timestamp']   
     player_name = event["queryStringParameters"]['player_name'] 
+    business_name = event["queryStringParameters"]['business_name']
     
     try:
         # Check if both keys are provided
-        if not court_number or not checkin_timestamp:
-            raise Exception('Error: The court_number and checkin_timestamp must not be null.')
+        if not court_number or not checkin_timestamp or not business_name:
+            raise Exception('Error: The business_name, court_number or checkin_timestamp must not be null.')
             
         # Create a DynamoDB client
         dynamodb = boto3.resource('dynamodb')
@@ -24,12 +25,13 @@ def lambda_handler(event, context):
         
         response = table.update_item(
             Key={
-                'court_number': int(court_number),
-                'checkin_timestamp': int(checkin_timestamp)
+                'business_name': business_name,
+                'court_number': court_number
             },
-            UpdateExpression="set player_name=:p",
+            UpdateExpression="set player_name=:p, checkin_timestamp=:c",
             ExpressionAttributeValues={
                 ':p': player_name,
+                ':c': checkin_timestamp
             },
             ReturnValues="UPDATED_NEW"
         )

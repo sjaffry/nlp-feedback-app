@@ -1,5 +1,5 @@
 import boto3
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Key, Attr
 import os
 import json
     
@@ -7,7 +7,8 @@ def lambda_handler(event, context):
     
     # Retrieve 'court_number' and 'checkin_timestamp' from the event
     court_number = event["queryStringParameters"]['court_number']
-    checkin_timestamp = event["queryStringParameters"]['checkin_timestamp']
+    checkin_timestamp = event["queryStringParameters"]['checkin_timestamp'] 
+    business_name = event["queryStringParameters"]['business_name'] 
     
     try:
         # Check if both keys are provided
@@ -21,16 +22,15 @@ def lambda_handler(event, context):
         tableName = os.environ['table_name']
         table = dynamodb.Table(tableName)
         
-        # Fetch the item from the table
-        response = table.get_item(
-            Key={
-                'court_number': int(court_number),
-                'checkin_timestamp': int(checkin_timestamp)
-            }
+        
+        # Fetch items from the table with a condition on checkin_timestamp
+        response = table.query(
+            KeyConditionExpression=Key('business_name').eq(business_name) & Key('court_number').eq(court_number),
+            FilterExpression=Attr('checkin_timestamp').eq(checkin_timestamp)
         )
         
-        # Check if item exists
-        item = response.get('Item')
+        # Check if item exists. There will only ever be one item returned for this
+        item = response.get('Items')
         
         if not item:
             new_item = {
@@ -40,9 +40,9 @@ def lambda_handler(event, context):
             }
         else:
             new_item = {
-                "court_number": str(item['court_number']),
-                "checkin_timestamp": str(item['checkin_timestamp']),
-                "player_name": item['player_name']
+                "court_number": item[0]['court_number'],
+                "checkin_timestamp": item[0]['checkin_timestamp'],
+                "player_name": item[0]['player_name']
             }
         
         return {

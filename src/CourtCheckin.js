@@ -17,6 +17,7 @@ const CourtCheckin = () => {
   const [checkinTimestamp, setCheckinTimestamp] = useState('');
   const queryParams = new URLSearchParams(window.location.search);
   const courtNumber = queryParams.get("court_number");
+  const businessName = queryParams.get("business_name");
 
   const getUnixTime = () => {
     const now = new Date(); 
@@ -59,7 +60,8 @@ const CourtCheckin = () => {
       const res = await axios.get('https://oqr6og2tf5.execute-api.us-west-2.amazonaws.com/Prod', {
         params: {
           court_number: courtNumber,
-          checkin_timestamp: getUnixTime()
+          checkin_timestamp: getUnixTime(),
+          business_name: businessName
         },           
         headers: {
         },
@@ -90,70 +92,72 @@ const CourtCheckin = () => {
 
     // Call saveCheckin API
     const res = await axios.put('https://oqr6og2tf5.execute-api.us-west-2.amazonaws.com/Prod', {}, {
-    params: {
-      court_number: courtNumber,
-      checkin_timestamp: getUnixTime(),
-      player_name: textInput
-    },
-    headers: {
-      'Content-Type': 'application/json'
-    }
-});
-    setShowSpinner(false);
-    setCheckinStatusText('Check-in complete!')
-    fetchCourtCheckin();
-  };
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        <div className="top-section" style={{ marginBottom: '30px' }}>
-          <img src={foothillslogo} alt="Organization logo" />
-        </div>
-        <h1 style={{ marginBottom: '20px' }}>Court {courtNumber} Check-in</h1>
-        <div style={{ marginBottom: '10px' }}>
-          Member full name
-        </div>
-        <Form>
-          <TextArea 
-            rows="1" 
-            cols="30"
-            onChange={(e) => setTextInput(e.target.value)} />
-        </Form>
-        <p></p>
-        <Form>
-          <Button 
-            icon="check" 
-            circular 
-            size="massive"
-            style={{
-              backgroundColor: buttonColor, 
-              color: 'white', 
-              fontSize: '48px',
-              padding: '30px 60px'
-            }}
-            onClick={handleSubmit}
-          />
-        </Form>
-        {showSpinner && <RotatingSquare color="#d5d4d4" />}
-        <p></p>
-        <div style={{ marginBottom: '30px' }}>
-        {checkinStatusText}
-        </div>
-        <p></p>
-        <div style={{
-          marginBottom: '10px',
-          backgroundColor: 'blue',
-          padding: '10px', 
-          borderRadius: '5px' 
-        }}>
-        Last Check-in: {unixTimeToDate(checkinTimestamp)}
-        <p></p>
-        Check-in by: {playerName}
-        </div>
-      </header>
-    </div>
-  );
-}
-
-export default CourtCheckin;
+      params: {
+        business_name: businessName,
+        court_number: courtNumber,
+        checkin_timestamp: getUnixTime(),
+        player_name: textInput
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      }
+  });
+      setShowSpinner(false);
+      setCheckinStatusText('Check-in complete!')
+      fetchCourtCheckin();
+    };
+  
+    return (
+      <div className="App">
+        <header className="App-header">
+          <div className="top-section" style={{ marginBottom: '30px' }}>
+            <img src={foothillslogo} alt="Organization logo" />
+          </div>
+          <h1 style={{ marginBottom: '20px' }}>Court {courtNumber} Check-in</h1>
+          <div style={{ marginBottom: '10px' }}>
+            Member full name
+          </div>
+          <Form>
+            <TextArea 
+              rows="1" 
+              cols="30"
+              onChange={(e) => setTextInput(e.target.value)} />
+          </Form>
+          <p></p>
+          <Form>
+            <Button 
+              icon="check" 
+              circular 
+              size="massive"
+              style={{
+                backgroundColor: buttonColor, 
+                color: 'white', 
+                fontSize: '48px',
+                padding: '30px 60px'
+              }}
+              onClick={handleSubmit}
+            />
+          </Form>
+          {showSpinner && <RotatingSquare color="#d5d4d4" />}
+          <p></p>
+          <div style={{ marginBottom: '30px' }}>
+          {checkinStatusText}
+          </div>
+          <p></p>
+          <div style={{
+            marginBottom: '10px',
+            backgroundColor: 'blue',
+            padding: '10px', 
+            borderRadius: '5px' 
+          }}>
+          Last Check-in: {unixTimeToDate(checkinTimestamp)}
+          <p></p>
+          Check-in by: {playerName}
+          </div>
+        </header>
+      </div>
+    );
+  }
+  
+  export default CourtCheckin;
+  
