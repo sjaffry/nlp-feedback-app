@@ -2,6 +2,14 @@ import boto3
 from boto3.dynamodb.conditions import Key
 import os
 import json
+import random
+
+def get_random_key():
+
+    min_value = 100000000000
+    max_value = 999999999999
+    
+    return random.randint(min_value, max_value)
 
 def lambda_handler(event, context):
     
@@ -27,17 +35,14 @@ def lambda_handler(event, context):
         tableName = os.environ['table_name']
         table = dynamodb.Table(tableName)
         
-        response = table.update_item(
-            Key={
+        response = table.put_item(
+            Item={
                 'business_name': business_name,
-                'court_number': court_number
-            },
-            UpdateExpression="set player_name=:p, checkin_timestamp=:c",
-            ExpressionAttributeValues={
-                ':p': player_name,
-                ':c': checkin_timestamp
-            },
-            ReturnValues="UPDATED_NEW"
+                'random_key': get_random_key(),
+                'court_number': court_number,
+                'player_name': player_name,
+                'checkin_timestamp': checkin_timestamp
+            }
         )
         
         return {
