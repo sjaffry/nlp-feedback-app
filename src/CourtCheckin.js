@@ -122,6 +122,7 @@ const CourtCheckin = () => {
             <TextArea 
               rows="1" 
               cols="30"
+              style={{ textAlign: 'center' }}
               onChange={(e) => setTextInput(e.target.value)} />
           </Form>
           <p></p>
