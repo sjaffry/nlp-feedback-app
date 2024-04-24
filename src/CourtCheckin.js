@@ -7,17 +7,24 @@ import '@fortawesome/fontawesome-free/js/all.js';
 import { RotatingSquare } from  'react-loader-spinner';
 import foothillslogo from './images/foothillslogowhite.svg';
 import { Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const CourtCheckin = () => {
   const [buttonColor, setButtonColor] = useState('blue');
   const [showSpinner, setShowSpinner] = useState(false);
   const [checkinStatusText, setCheckinStatusText] = useState('Tap to Check-in');
   const [playerName, setPlayerName] = useState('');
-  const [textInput, setTextInput] = useState('');
+  const [checkinName, setCheckinName] = useState('');
   const [checkinTimestamp, setCheckinTimestamp] = useState('');
   const queryParams = new URLSearchParams(window.location.search);
   const courtNumber = queryParams.get("court_number");
   const businessName = queryParams.get("business_name");
+  const [rememberMe, setRememberMe] = useState(false);
+  var cookieData = {
+    username: playerName,
+    rememberMe: rememberMe
+  };
+  
 
   const getUnixTime = () => {
     const now = new Date(); 
@@ -67,7 +74,7 @@ const CourtCheckin = () => {
         },
       });
       setCheckinTimestamp(res.data['checkin_timestamp']);
-      setPlayerName(res.data['player_name']);
+      setCheckinName(res.data['player_name']);
     } catch (error) {
       console.error('Error:', error);
       alert('Unexpected error. Please report it to front office');        
@@ -76,6 +83,15 @@ const CourtCheckin = () => {
 
   // Call retrieve checkin API
   useEffect(() => {
+    const storedCookie = Cookies.get('userData');
+    if (storedCookie) {
+      cookieData = JSON.parse(storedCookie);
+      if (cookieData.rememberMe && cookieData.playerName) {
+        setPlayerName(cookieData.playerName);
+        setRememberMe(true);
+      }
+    }
+
     fetchCourtCheckin();
   }, []);
 
@@ -89,14 +105,24 @@ const CourtCheckin = () => {
 
     setShowSpinner(true);
     setButtonColor('green');
-
+    if (rememberMe) {
+      cookieData = {
+        playerName: playerName,
+        rememberMe: rememberMe
+      }
+      const serializedData = JSON.stringify(cookieData);
+      Cookies.set('userData', serializedData, { expires: 30 });
+    }
+    else {
+      Cookies.remove('userData');
+    }
     // Call saveCheckin API
     const res = await axios.put('https://oqr6og2tf5.execute-api.us-west-2.amazonaws.com/Prod', {}, {
       params: {
         business_name: businessName,
         court_number: courtNumber,
         checkin_timestamp: getUnixTime(),
-        player_name: textInput,
+        player_name: playerName,
         keep_warm: 'false'
       },
       headers: {
@@ -120,10 +146,22 @@ const CourtCheckin = () => {
           </div>
           <Form>
             <TextArea 
+              value={playerName}
               rows="1" 
               cols="30"
               style={{ textAlign: 'center' }}
-              onChange={(e) => setTextInput(e.target.value)} />
+              onChange={(e) => setPlayerName(e.target.value)} />
+            <div style={{ margin: '10px 0' }}>
+            <label>
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                style={{ marginRight: '8px', verticalAlign: 'middle' }}
+              />
+               <span style={{ verticalAlign: 'middle' }}>Remember me</span>
+              </label>
+            </div>
           </Form>
           <p></p>
           <Form>
@@ -154,7 +192,7 @@ const CourtCheckin = () => {
           }}>
           Last Check-in: {unixTimeToDate(checkinTimestamp)}
           <p></p>
-          Check-in by: {playerName}
+          Check-in by: {checkinName}
           </div>
         </header>
       </div>
