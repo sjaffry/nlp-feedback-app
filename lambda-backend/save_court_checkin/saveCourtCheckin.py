@@ -19,6 +19,7 @@ def lambda_handler(event, context):
     player_name = event["queryStringParameters"]['player_name'] 
     business_name = event["queryStringParameters"]['business_name']
     keep_warm = event["queryStringParameters"]['keep_warm']
+    dynamodb = boto3.resource('dynamodb')
     
     if keep_warm == "true":
         return {'body': json.dumps('stay warm!')}
@@ -27,9 +28,6 @@ def lambda_handler(event, context):
         # Check if both keys are provided
         if not court_number or not checkin_timestamp or not business_name:
             raise Exception('Error: The business_name, court_number or checkin_timestamp must not be null.')
-            
-        # Create a DynamoDB client
-        dynamodb = boto3.resource('dynamodb')
         
         # Specify the table
         tableName = os.environ['table_name']

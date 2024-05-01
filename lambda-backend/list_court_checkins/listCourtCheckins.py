@@ -4,6 +4,12 @@ from boto3.dynamodb.conditions import Key
 import json
 import base64
 
+# Create a DynamoDB client
+dynamodb = boto3.resource('dynamodb')
+# Select your DynamoDB table
+tableName = os.environ['table_name']
+table = dynamodb.Table(tableName)
+
 def decode_base64_url(data):
     """Add padding to the input and decode base64 url"""
     missing_padding = len(data) % 4
@@ -27,16 +33,13 @@ def lambda_handler(event, context):
     # Let's extract the business name from the token by looking at the group membership of the user
     token = event['headers']['Authorization']
     decoded = decode_jwt(token)
+    keep_warm = event["queryStringParameters"]['keep_warm']
     # We only ever expect the user to be in one group only - business rule
     business_name = decoded['cognito:groups'][0]
     user_name = decoded['cognito:username']
     
-    # Create a DynamoDB client
-    dynamodb = boto3.resource('dynamodb')
-    
-    # Select your DynamoDB table
-    tableName = os.environ['table_name']
-    table = dynamodb.Table(tableName)
+    if keep_warm == "true":
+        return {'body': json.dumps('stay warm!')}
     
     # Fetch all items from the table filtered by business_name
     try:
