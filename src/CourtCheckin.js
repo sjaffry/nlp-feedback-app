@@ -6,7 +6,6 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import '@fortawesome/fontawesome-free/js/all.js';
 import { RotatingSquare } from  'react-loader-spinner';
 import foothillslogo from './images/foothillslogowhite.svg';
-import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 const CourtCheckin = () => {
@@ -28,14 +27,29 @@ const CourtCheckin = () => {
 
   const getUnixTime = () => {
     const now = new Date(); 
-    const minutes = now.getMinutes();
-    const roundedMinutes = minutes >= 30 ? 30 : 0;  // We're rounding to the nearest 30mins prior
+    return Math.floor(now.getTime() / 1000);
+  }
+  
+  const roundedTS = (unixTimestamp) => {
+    // Convert Unix timestamp to milliseconds
+    const date = new Date(unixTimestamp * 1000);
+    let minutes = date.getMinutes();
+    minutes = minutes >= 30 ? 30 : 0;
+    date.setMinutes(minutes, 0, 0);
 
-    now.setMinutes(roundedMinutes); 
-    now.setSeconds(0);
-    now.setMilliseconds(0);
+    // Convert back to Unix timestamp
+    return Math.floor(date.getTime() / 1000);
+  };
 
-    return Math.floor(now.getTime() / 1000);  // Convert to Unix time
+  const roundedDate = (date) => {
+    const minutes = date.getMinutes();
+    const roundedMinutes = minutes >= 30 ? 30 : 0; 
+
+    date.setMinutes(roundedMinutes); 
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+
+    return Math.floor(date.getTime() / 1000);  // Returning unix ts rounded to prior 30min mark
   };
 
   function unixTimeToDate(unixTime) {
@@ -49,7 +63,6 @@ const CourtCheckin = () => {
     const months = ["January", "February", "March", "April", "May", "June",
                     "July", "August", "September", "October", "November", "December"];
     
-    // Rounding the minutes might require changing the hour and even the day
     date.setSeconds(0); // Reset seconds to 0
     date.setMilliseconds(0); // Reset milliseconds to 0
 
@@ -63,11 +76,13 @@ const CourtCheckin = () => {
   }
 
   const fetchCourtCheckin = async () => {
+    const now = new Date(); 
+    const roundedUnixTime = roundedDate(now);
     try {
       const res = await axios.get('https://oqr6og2tf5.execute-api.us-west-2.amazonaws.com/Prod', {
         params: {
           court_number: courtNumber,
-          checkin_timestamp: getUnixTime(),
+          checkin_timestamp: roundedUnixTime,
           business_name: businessName
         },           
         headers: {
@@ -97,8 +112,10 @@ const CourtCheckin = () => {
 
   const handleSubmit = async() => {
 
+    const now = new Date(); 
+    const roundedUnixTime = roundedDate(now);
     // If the checkin is within the current 30min window then it's not allowed
-    if (getUnixTime() == checkinTimestamp) {
+    if (roundedUnixTime == roundedTS(checkinTimestamp)) {
       alert('Court has already been checked in. See last checkin!')
       return;
     }

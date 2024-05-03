@@ -26,7 +26,7 @@ def lambda_handler(event, context):
         # Fetch items from the table with a condition on checkin_timestamp
         response = table.query(
             KeyConditionExpression=Key('business_name').eq(business_name),
-            FilterExpression=Attr('checkin_timestamp').eq(checkin_timestamp) & Attr('court_number').eq(court_number)
+            FilterExpression=Attr('checkin_timestamp').gte(checkin_timestamp) & Attr('court_number').eq(court_number)
         )
         
         # Check if item exists. There will only ever be one item returned for this
