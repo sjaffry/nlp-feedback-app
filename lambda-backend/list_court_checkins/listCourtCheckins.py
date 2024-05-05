@@ -46,7 +46,8 @@ def lambda_handler(event, context):
         response = table.scan(
             FilterExpression=Key('business_name').eq(business_name)
         )
-        items = response['Items']
+        # Sort the results by checkin_timestamp in descending order
+        items = sorted(response['Items'], key=lambda x: x['checkin_timestamp'], reverse=True)
         
         # Continue scanning if there are more items
         while 'LastEvaluatedKey' in response:
