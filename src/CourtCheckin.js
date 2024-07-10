@@ -18,7 +18,10 @@ const CourtCheckin = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const courtNumber = queryParams.get("court_number");
   const businessName = queryParams.get("business_name");
+  const inputHashToken = queryParams.get("t");
   const [rememberMe, setRememberMe] = useState(false);
+  const [memberNames, setMemberNames] = useState([]);
+  
   var cookieData = {
     username: playerName,
     rememberMe: rememberMe
@@ -96,19 +99,50 @@ const CourtCheckin = () => {
     }
   };
 
-  // Call retrieve checkin API
+  const fetchMemberNames = async (firstNamePrefix) => {
+    const now = new Date(); 
+    const roundedUnixTime = roundedDate(now);
+    try {
+      const res = await axios.get('https://3zvcqe01h8.execute-api.us-west-2.amazonaws.com/Prod', {
+        params: {
+          court_number: courtNumber,
+          first_name_prefix: firstNamePrefix,
+          business_name: businessName,
+          input_hash_token: inputHashToken
+        },           
+        headers: {
+        },
+      });
+      const members = (res.data);
+      setMemberNames(members);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Unexpected error. Please report it to front office');        
+    }
+  };
+
+  // Fetch the cookie data once on component mount
   useEffect(() => {
     const storedCookie = Cookies.get('userData');
     if (storedCookie) {
-      cookieData = JSON.parse(storedCookie);
+      const cookieData = JSON.parse(storedCookie);
       if (cookieData.rememberMe && cookieData.playerName) {
         setPlayerName(cookieData.playerName);
         setRememberMe(true);
       }
     }
-
-    fetchCourtCheckin();
   }, []);
+
+  // Fetch member names when playerName changes
+  useEffect(() => {
+    if (playerName.length >= 2) {
+      const nameParts = playerName.split(' ');
+      fetchMemberNames(nameParts[0]);
+    } else {
+      setMemberNames([]);
+    }
+    fetchCourtCheckin();
+  }, [playerName]);
 
   const handleSubmit = async() => {
 
@@ -150,6 +184,14 @@ const CourtCheckin = () => {
       setCheckinStatusText('Check-in complete!')
       fetchCourtCheckin();
     };
+
+  // Split playerName into first name and last name
+  const [firstName, lastName] = playerName.split(' ');
+
+  // Check if the entered name matches any of the member names
+  const nameExists = memberNames.some(
+    member => member.first_name === firstName && member.last_name === lastName
+  );
   
     return (
       <div className="App">
@@ -167,16 +209,36 @@ const CourtCheckin = () => {
               rows="1" 
               cols="30"
               style={{ textAlign: 'center' }}
-              onChange={(e) => setPlayerName(e.target.value)} />
+              onChange={(e) => setPlayerName(e.target.value)} 
+            />
+            {memberNames.length > 0 && !nameExists && (
+              <ul style={{ listStyleType: 'none', padding: 0 }}>
+                {memberNames.map((memberNames, index) => (
+                  <li key={index} onClick={() => setPlayerName(`${memberNames.first_name} ${memberNames.last_name}`)}
+                  style={{
+                    border: '1px solid #ccc', 
+                    padding: '5px', 
+                    margin: '5px 0',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    backgroundColor: '#fae4b1',
+                    color: 'black'
+                  }}
+                  >
+                    {memberNames.first_name} {memberNames.last_name}
+                  </li>
+                ))}
+              </ul>
+            )}
             <div style={{ margin: '10px 0' }}>
-            <label>
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                style={{ marginRight: '8px', verticalAlign: 'middle' }}
-              />
-               <span style={{ verticalAlign: 'middle' }}>Remember me</span>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  style={{ marginRight: '8px', verticalAlign: 'middle' }}
+                />
+                 <span style={{ verticalAlign: 'middle' }}>Remember me</span>
               </label>
             </div>
           </Form>
@@ -193,12 +255,13 @@ const CourtCheckin = () => {
                 padding: '30px 60px'
               }}
               onClick={handleSubmit}
+              disabled={!nameExists}
             />
           </Form>
           {showSpinner && <RotatingSquare color="#d5d4d4" />}
           <p></p>
           <div style={{ marginBottom: '30px' }}>
-          {checkinStatusText}
+            {checkinStatusText}
           </div>
           <p></p>
           <div style={{
@@ -207,14 +270,14 @@ const CourtCheckin = () => {
             padding: '10px', 
             borderRadius: '5px' 
           }}>
-          Last Check-in: {unixTimeToDate(checkinTimestamp)}
-          <p></p>
-          Check-in by: {checkinName}
+            Last Check-in: {unixTimeToDate(checkinTimestamp)}
+            <p></p>
+            Check-in by: {checkinName}
           </div>
         </header>
       </div>
     );
-  }
+  };
   
   export default CourtCheckin;
   

@@ -6,9 +6,19 @@ from boto3.dynamodb.conditions import Key
 
 dynamodb = boto3.resource('dynamodb')
 
+def caesar_cipher(text, shift):
+    obfuscated_text = []
+    for char in text:
+        if char.isalpha():
+            shift_base = 65 if char.isupper() else 97
+            obfuscated_text.append(chr((ord(char) - shift_base + shift) % 26 + shift_base))
+        else:
+            obfuscated_text.append(char)
+    return ''.join(obfuscated_text)
+
 def validToken(inputHashToken, court_number, business_name):
-    biz_name = (business_name[::-1])
-    string_to_hash = f'court{court_number}-{biz_name}'
+    obfuscated_biz_name = caesar_cipher(business_name, 3)
+    string_to_hash = f'court{court_number}-{obfuscated_biz_name}'
     input_bytes = string_to_hash.encode('utf-8')
     
     sha256_hash = hashlib.sha256()
