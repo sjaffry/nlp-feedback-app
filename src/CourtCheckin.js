@@ -185,12 +185,18 @@ const CourtCheckin = () => {
       fetchCourtCheckin();
     };
 
-  // Split playerName into first name and last name
-  const [firstName, lastName] = playerName.split(' ');
+  // Split playerName into parts
+  const nameParts = playerName.split(' ');
+
+  // Extract the first name
+  const firstName = nameParts[0];
+
+  // Extract the last name by joining all remaining parts
+  const lastName = nameParts[nameParts.length - 1];
 
   // Check if the entered name matches any of the member names
   const nameExists = memberNames.some(
-    member => member.first_name === firstName && member.last_name === lastName
+    member => member.first_name.split(' ')[0] === firstName && member.last_name.split(' ').pop() === lastName
   );
   
     return (
