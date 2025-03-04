@@ -1,6 +1,6 @@
 # An AI Powered customer survey app - Part 1
 
-A cost efficient, completely serverless app for users to provide feedback by scanning a QR code and either speaking or writing short feedback. The app uses voice recognition to convert verbak feed into text. Additionally, specific to tennis clubs - for which I built this app oroginally - the app also has a tennis court management twin where users can scan a QR code to "check-in into a court they had reserved. 
+A cost efficient, completely serverless app for users to provide feedback by scanning a QR code and either speaking or writing short feedback. The app uses voice recognition to convert verbal feedback into text. Additionally, specific to tennis clubs - for which I built this app originally - the app also has a tennis court management twin where users can scan a QR code to "check-in" to a court they had reserved. 
 
 App has the following features:
 
