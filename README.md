@@ -1,12 +1,24 @@
-# Getting Started with Create React App
+# An AI Powered customer survey app - Part 1
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A cost efficient, completely serverless app for users to provide feedback by scanning a QR code and either speaking or writing short feedback. The app uses voice recognition to convert verbak feed into text. Additionally, specific to tennis clubs - for which I built this app oroginally - the app also has a tennis court management twin where users can scan a QR code to "check-in into a court they had reserved. 
 
-## Still to fix list
-### Targeted sentiment object names
-- Spelling correction of words
-- Plural vs singular
-- Long form vs short e.g. "French fries vs fries"
+App has the following features:
+
+1. Setup of survey events and associated QR codes
+2. Simple mobile-optimized UI to collect verbal or textual feedback from users
+3. AI to convert voice to text
+4. Automated consolidation of all feedback
+5. QR code based court check-in 
+
+
+#### Part 2 of this app is called NLP Query app (separte repo) that allows survey owners to process and view survey results 
+
+## Architecture
+### Flow 1 (User feedback flow)
+![crud flow](/src/images/feedback.png)
+
+### Flow 2 (Court check-in flow)
+![crud flow](/src/images/court-checkin.png)
 
 ## Available Scripts
 
