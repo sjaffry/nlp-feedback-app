@@ -15,16 +15,16 @@ App has the following features:
 
 ## Architecture
 ### Flow 1 (User feedback flow)
-![crud flow](/src/images/feedback.png)
+![feedback flow](/src/images/feedback.png)
 
 ### Flow 2 (Court check-in flow)
-![crud flow](/src/images/court-checkin.png)
+![court checkins](/src/images/court-checkin.png)
 
 ### Flow 3 (Background processing of reviews)
 1. Daily scheduled job to combine individual reviews into a single file
 2. Near real-time, event based AI transcription of audio reviews
  
-![crud flow](/src/images/reviews-processing.png)
+![background flow](/src/images/reviews-processing.png)
 
 ## Available Scripts
 
