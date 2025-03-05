@@ -20,6 +20,12 @@ App has the following features:
 ### Flow 2 (Court check-in flow)
 ![crud flow](/src/images/court-checkin.png)
 
+### Flow 3 (Background processing of reviews)
+1. Daily scheduled job to combine individual reviews into a single file
+2. Near real-time, event based AI transcription of audio reviews
+ 
+![crud flow](/src/images/reviews-processing.png)
+
 ## Available Scripts
 
 In the project directory, you can run:
