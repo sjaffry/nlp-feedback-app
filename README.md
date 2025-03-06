@@ -11,7 +11,7 @@ App has the following features:
 5. QR code based court check-in 
 
 
-#### Part 2 of this app is called NLP Query app (separte repo) that allows survey owners to process and view survey results 
+#### Part 2 of this app is called [NLP Query app](https://github.com/sjaffry/nlp_query_app) that allows survey owners to process and view survey results 
 
 ## Architecture
 ### Flow 1 (User feedback flow)
