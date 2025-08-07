@@ -31,8 +31,11 @@ def lambda_handler(event, context):
     # Let's extract the business name from the token by looking at the group memebership of the user
     token = event['headers']['Authorization']
     decoded = decode_jwt(token)
+    
     # We only ever expect the user to be in one group only - business rule
-    business_name = decoded['cognito:groups'][0]
+    filtered_values = [value for value in decoded['cognito:groups'] if value != 'tennis-admin']
+    business_name = filtered_values[0] if filtered_values else None
+
     folder_loc = (
     "transcribe-output/"
     + f"{business_name}/"
