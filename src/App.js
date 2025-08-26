@@ -78,9 +78,10 @@ const App = () => {
     }
     setShowSpinner(true);
     const fileName = generateRandomNumber();
+    const fileNameWithExtension = `${fileName}.mp3`;
     const fileType = file.type;
-    const url = "https://mag7w370mh.execute-api.us-west-2.amazonaws.com/Prod?"
-    const signUrl = url.concat("qs="+queryString+"&file_name="+fileName+"&upload_dir=audio");    
+    const url = "https://dt72vdsbe22rc.cloudfront.net?"
+    const signUrl = url.concat("qs="+queryString+"&file_name="+fileNameWithExtension+"&upload_dir=audio");
     axios.get(signUrl)
     .then(response => {
       var signedRequest = response.data.uploadURL;

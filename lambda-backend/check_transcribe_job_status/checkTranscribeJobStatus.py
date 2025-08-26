@@ -3,7 +3,7 @@ import boto3
 
 def lambda_handler(event, context):
     
-    transcribe = boto3.client(service_name='transcribe', region_name='us-east-1')
+    transcribe = boto3.client(service_name='transcribe', region_name='us-west-2')
 
     job_name = event['transcript_job_name']
     job_timestamp = event['interaction_date_time']
